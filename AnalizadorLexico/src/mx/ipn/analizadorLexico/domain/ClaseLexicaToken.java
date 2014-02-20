@@ -1,5 +1,6 @@
 package mx.ipn.analizadorLexico.domain;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClaseLexicaToken {
@@ -21,14 +22,22 @@ public class ClaseLexicaToken {
     }
 
     public void initializeMapWithValues(){
+        claseLexicaToken = new HashMap<Object, Integer>();
         claseLexicaToken.put(SIMB,TokenCL.SIMB);
         claseLexicaToken.put(OR,TokenCL.OR);
         claseLexicaToken.put(AND,TokenCL.AND);
         claseLexicaToken.put(PAR_I,TokenCL.PAR_I);
         claseLexicaToken.put(PAR_D,TokenCL.PAR_D);
-        claseLexicaToken.put(CERR_POS,TokenCL.CERR_POS)
+        claseLexicaToken.put(CERR_POS,TokenCL.CERR_POS);
         claseLexicaToken.put(CERR_ESTRELLA,TokenCL.CERR_ESTR);
         claseLexicaToken.put(OPC,TokenCL.OPC);
     }
 
+    public Map<Object, Integer> getClaseLexicaToken() {
+        return claseLexicaToken;
+    }
+
+    public void setClaseLexicaToken(Map<Object, Integer> claseLexicaToken) {
+        this.claseLexicaToken = claseLexicaToken;
+    }
 }
