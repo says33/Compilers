@@ -1,5 +1,7 @@
 package mx.ipn.analizadorLexico.utils;
 import mx.ipn.analizadorLexico.domain.AFN;
+import mx.ipn.analizadorLexico.domain.ClaseLexica;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gamaliel
@@ -11,31 +13,47 @@ public class AnalizadorLexico {
 
     /*Constructor*/
     public AnalizadorLexico(){}
-
-    boolean E(AFN afn){
-        if(T(afn))
-            if(Ep(afn))
+    /*
+    boolean E(AFN f1){
+        if(T(f1))
+            if(Ep(f1))
                 return true;
+
         return false;
     }
 
-    boolean Ep(AFN afn){
+    boolean Ep(AFN f1){
+        int tok;
+        AFN f2 = new AFN();
+        tok = lexic.yylex();
 
+        if(tok == ClaseLexica.OR){
+            if(T(f2)){
+                f1.unir(f1);
+                if(Ep(f1))
+                    return true;
+            }
+        }
+
+        lexic.regresaToken();
         return true;
     }
 
-    boolean T(AFN afn){
-        if(F(afn))
-            return true;
-        else
-            return false;
+    boolean T(AFN f1){
+        if(C(f1))
+            if(Tp(f1))
+                return true;
+
+        return false;
     }
 
-    boolean Tp(){
-        return true;
-    }
+    boolean Tp(AFN f1){
+        int tok;
+        tok = lexic.yylex();
+        AFN f2 = new AFN();
 
-    boolean F(AFN afn){
-        return true;
-    }
+        if(tok == ClaseLexica.CONC){
+            if(C(Fn))
+        }
+    }*/
 }
