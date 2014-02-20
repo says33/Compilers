@@ -4,3 +4,8 @@
 *.jar
 *.war
 *.ear
+
+# Idea Files#
+
+AnalizadorLexico/.idea/
+AnalizadorLexico/out/
