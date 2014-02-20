@@ -1,4 +1,8 @@
 package mx.ipn.analizadorLexico.domain;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Gamaliel
@@ -10,12 +14,13 @@ public class Estado {
 
     private Integer id;
     private boolean esEstadoAceptacion;
+    private Map<Character,Estado> transiciones;
 
     /*Constructor del estado sin parámetros*/
     public Estado(){}
 
-    public Estado(Integer id,boolean esEstadoAceptacion){
-
+    public Estado(boolean esEstadoAceptacion){
+        transiciones = new HashMap<Character, Estado>();
     }
 
     public Integer getId() {
@@ -34,4 +39,11 @@ public class Estado {
         this.esEstadoAceptacion = esEstadoAceptacion;
     }
 
+    public Map<Character, Estado> getTransiciones() {
+        return transiciones;
+    }
+
+    public void setTransiciones(Map<Character, Estado> transiciones) {
+        this.transiciones = transiciones;
+    }
 }

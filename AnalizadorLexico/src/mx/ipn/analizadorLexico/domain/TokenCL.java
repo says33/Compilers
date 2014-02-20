@@ -8,6 +8,6 @@ package mx.ipn.analizadorLexico.domain;
  * To change this template use File | Settings | File Templates.
  */
 public class TokenCL {
-    public final static int SIMB=290, OR=291, AND=292, PAR_I=300, PAR_D=301,
+    public final static int SIMB=290, OR=291, CONC=292, PAR_I=300, PAR_D=301,
                             CERR_POS=302,CERR_ESTR=303, OPC=304;
 }

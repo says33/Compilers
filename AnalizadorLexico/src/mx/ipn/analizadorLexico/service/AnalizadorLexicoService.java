@@ -7,13 +7,6 @@ import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Gamaliel
- * Date: 16/02/14
- * Time: 05:41 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AnalizadorLexicoService {
 
     public void getFinalAutomata(){
