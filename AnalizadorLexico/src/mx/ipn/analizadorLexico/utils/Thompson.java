@@ -1,6 +1,7 @@
 package mx.ipn.analizadorLexico.utils;
 import mx.ipn.analizadorLexico.domain.AFN;
 import mx.ipn.analizadorLexico.domain.ClaseLexica;
+import mx.ipn.analizadorLexico.domain.Estado;
 
 /**
  * User: Gamaliel
@@ -19,11 +20,8 @@ public class Thompson {
         ClaseLexica cl = new ClaseLexica();
         cl.setExpresionRegular(regularExpression);
 
-        AnalizadorLexico al = new AnalizadorLexico(cl);
-
-        if(al.E(afn)){
-            System.out.println("Ya casi armamos el automata");
-        }
+        DescensoRecursivo descensoRecursivo = new DescensoRecursivo(cl);
+        descensoRecursivo.E(afn);
 
         return afn;
     }

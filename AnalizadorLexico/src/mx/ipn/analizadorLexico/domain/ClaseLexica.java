@@ -21,6 +21,13 @@ public class ClaseLexica {
         this.position++;
         if(position<expresionRegular.length()){
             Character currentChar = new Character(expresionRegular.charAt(position));
+            if(isDigit(currentChar) || isLetter(currentChar))
+                return TokenCL.SIMB;
+            else if(currentChar == '\\'){
+                position++;
+                return TokenCL.SIMB;
+            }
+
             return ClaseLexicaToken.claseLexicaToken.get(currentChar);
         }
         return 0;
@@ -50,4 +57,19 @@ public class ClaseLexica {
     public void setPosition(Integer position) {
         this.position = position;
     }
+
+    public boolean isDigit(Character c){
+        if(c>='0'&&c<='9')
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isLetter(Character c){
+        if(c>='a'&&c<='z' || c>='A'&&c<='Z')
+            return true;
+        else
+            return false;
+    }
+
 }

@@ -10,15 +10,15 @@ import mx.ipn.analizadorLexico.domain.TokenCL;
  * Time: 10:34 PM
  * To change this template use File | Settings | File Templates.
  */
-public class AnalizadorLexico {
+public class DescensoRecursivo {
 
     private ClaseLexica lexic;
 
     /*Constructor*/
-    public AnalizadorLexico(){}
+    public DescensoRecursivo(){}
 
     /*Inyección por constructor*/
-    public AnalizadorLexico(ClaseLexica lexic){
+    public DescensoRecursivo(ClaseLexica lexic){
         this.lexic = lexic;
     }
 
@@ -61,6 +61,7 @@ public class AnalizadorLexico {
         tok = lexic.yylex();
 
         if(tok == TokenCL.CONC){
+            System.out.println("CONC");
             AFN f2 = new AFN();
             if(C(f2)){
                 f1.conc(f2);
@@ -108,7 +109,6 @@ public class AnalizadorLexico {
     boolean F(AFN f1){
         Integer tok;
         tok = lexic.yylex();
-        System.out.println("Token del caracter " + tok);
         if(tok == TokenCL.PAR_I){
             if(E(f1)){
                 tok = lexic.yylex();

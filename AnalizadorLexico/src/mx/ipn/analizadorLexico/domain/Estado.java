@@ -12,15 +12,22 @@ import java.util.Map;
  */
 public class Estado {
 
-    private Integer id;
+    private Integer id = -1;
     private boolean esEstadoAceptacion;
-    private Map<Character,Estado> transiciones;
+    private Map<Character,Object> transiciones;
 
     /*Constructor del estado sin parámetros*/
     public Estado(){}
 
+    public Estado(Integer id,boolean esEstadoAceptacion){
+        transiciones = new HashMap<Character,Object>();
+        this.id = id;
+        this.esEstadoAceptacion = esEstadoAceptacion;
+    }
+
     public Estado(boolean esEstadoAceptacion){
-        transiciones = new HashMap<Character, Estado>();
+        transiciones = new HashMap<Character,Object>();
+        this.esEstadoAceptacion = esEstadoAceptacion;
     }
 
     public Integer getId() {
@@ -39,11 +46,11 @@ public class Estado {
         this.esEstadoAceptacion = esEstadoAceptacion;
     }
 
-    public Map<Character, Estado> getTransiciones() {
+    public Map<Character,Object> getTransiciones() {
         return transiciones;
     }
 
-    public void setTransiciones(Map<Character, Estado> transiciones) {
+    public void setTransiciones(Map<Character,Object> transiciones) {
         this.transiciones = transiciones;
     }
 }
