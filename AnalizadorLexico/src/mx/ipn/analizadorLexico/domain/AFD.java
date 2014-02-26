@@ -41,18 +41,12 @@ public class AFD {
     }
 
     /*Método utilizado para comprobar si hay estados sin marcar en el AFD*/
-    public boolean edosWithoutBeMarked(){
-        ArrayList<Estado> estados = new ArrayList<Estado>();
-        estados.add(this.edoInicial);
-
-        for(Estado e: this.estados)
-            estados.add(e);
-
-        for(int i=0;i<estados.size();i++){
+    public boolean edosSinMarcar(){
+        if(this.edoInicial.getId() != -1)
+            return false;
+        for(int i=0;i<estados.size();i++)
             if(estados.get(i).getId() == -1)
                 return true;
-        }
-
         return false;
     }
 }

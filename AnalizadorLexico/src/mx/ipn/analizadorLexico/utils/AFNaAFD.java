@@ -17,7 +17,7 @@ public class AFNaAFD {
     }
 
     public void convierteAFNaAFD(AFN afn,AFD afd){
-        while(afd.edosWithoutBeMarked()){
+        while(afd.edosSinMarcar()){
 
         }
     }
