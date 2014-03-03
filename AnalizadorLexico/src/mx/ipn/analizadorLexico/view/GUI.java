@@ -42,11 +42,6 @@ public class GUI extends JFrame implements ActionListener{
     }
 
     public void paint(Graphics g){
-
-        g.setColor (Color.blue);
-        g.drawString("Primer linea",10,200);
-        g.drawString("Segunda linea",10,300);
-
     }
 
 }

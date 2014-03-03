@@ -14,13 +14,11 @@ import java.util.Map;
 
 public class AnalizadorLexicoService {
 
-    public void getFinalAutomata(){
+    public AFN getFinalAutomata(){
         ArrayList<String> regularExpressions = readFromFile();
         Thompson thompson = new Thompson();
 
         AFN finalAFN = new AFN();
-        AFD afd = new AFD();
-        AFNaAFD convertidor = new AFNaAFD();
 
         ArrayList<AFN> afns = new ArrayList<AFN>();
         for(int i=0;i<regularExpressions.size();i++)
@@ -29,24 +27,14 @@ public class AnalizadorLexicoService {
         uneAutomatas(afns,finalAFN);
         finalAFN.etiquetaEstados(finalAFN.getEstadoInicial(),1);
 
+        return finalAFN;
         /*
         for(Estado e: finalAFN.getAllEdosFromAutomata()){
             System.out.println(e.getId());
             finalAFN.printTransicionesEdo(e);
         }
         System.out.println("\n");
-         */
-        convertidor.convierteAFNaAFD(finalAFN,afd);
-
-        for(Estado e:afd.getEstadoInicial().getSubEstados())
-            System.out.println(e.getId());
-        System.out.println("\n");
-        for(EstadoAFD e: afd.getEstados()){
-            for(Estado se: e.getSubEstados()){
-                System.out.println(se.getId());
-            }
-            System.out.println("\n");
-        }
+        */
 
     }
 

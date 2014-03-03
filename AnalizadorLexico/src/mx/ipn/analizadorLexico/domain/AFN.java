@@ -265,27 +265,25 @@ public class AFN {
     public void printTransicionesEdo(Estado q) {
         Iterator iterator = q.getTransiciones().keySet().iterator();
         Character key = ' ';
-        String value = "";
+        String value;
 
         while (iterator.hasNext()) {
             key = new Character(iterator.next().toString().charAt(0));
-
+            value = "";
             Object e = q.getTransiciones().get(key);
 
             if (e instanceof Estado)
-                value += ((Estado) e).getId().toString();
+                value += ((Estado) e).isEsEstadoAceptacion();
             else if (e instanceof ArrayList) {
-                for (Estado edo : (ArrayList<Estado>) e) {
+                for (Estado edo : (ArrayList<Estado>)e){
                     if (value.equals(""))
-                        value += edo.getId().toString();
+                        value += edo.isEsEstadoAceptacion();
                     else
-                        value += "-" + edo.getId().toString();
+                        value += "-" + edo.isEsEstadoAceptacion();
                 }
             }
-
+            System.out.println("Key " + key + " Value:" + value);
         }
-
-        System.out.println("Key " + key + " Value:" + value);
     }
 
     public void agregarAlfabeto(ArrayList<Character> a){

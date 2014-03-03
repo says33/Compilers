@@ -47,10 +47,15 @@ public class AFNaAFD {
                 subEstadosAFD = cerradurae(afd.irA(aux,c),c);
                 U.setSubEstados(subEstadosAFD);
 
-                if(!afd.estadoEnAFD(U) && U.getSubEstados().size() > 0){
-                    dEstados = afd.getEstados();
-                    dEstados.add(U);
-                    afd.setEstados(dEstados);
+                if((afd.estadoEnAFD(U) == null)){
+                    if(U.getSubEstados().size() > 0){
+                        dEstados = afd.getEstados();
+                        dEstados.add(U);
+                        afd.setEstados(dEstados);
+                    }
+                }
+                else{
+                    U = afd.estadoEnAFD(U);
                 }
 
                 dTran = aux.getdTrans();
@@ -111,7 +116,6 @@ public class AFNaAFD {
                 for (Estado edo : (ArrayList<Estado>) e)
                     edos.add(edo);
         }
-
         return edos;
     }
 

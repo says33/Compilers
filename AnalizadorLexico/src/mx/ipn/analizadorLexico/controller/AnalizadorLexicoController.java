@@ -1,7 +1,9 @@
 package mx.ipn.analizadorLexico.controller;
 
+import mx.ipn.analizadorLexico.domain.AFD;
 import mx.ipn.analizadorLexico.domain.AFN;
 import mx.ipn.analizadorLexico.service.AnalizadorLexicoService;
+import mx.ipn.analizadorLexico.utils.AFNaAFD;
 
 /**
  * Author: Gamaliel Jiménez
@@ -15,7 +17,12 @@ public class AnalizadorLexicoController {
     }
 
     public void getAFN(){
+        AFNaAFD convertidor = new AFNaAFD();
         AnalizadorLexicoService als = new AnalizadorLexicoService();
-        als.getFinalAutomata();
+        AFN afn = als.getFinalAutomata();
+        AFD afd = new AFD();
+        convertidor.convierteAFNaAFD(afn,afd);
+        afd.printTransiciones();
+
     }
 }

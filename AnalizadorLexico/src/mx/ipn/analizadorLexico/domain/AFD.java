@@ -1,6 +1,7 @@
 package mx.ipn.analizadorLexico.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -65,25 +66,28 @@ public class AFD {
         return null;
     }
 
-    public boolean estadoEnAFD(EstadoAFD q){
+    public EstadoAFD estadoEnAFD(EstadoAFD q){
 
         if(compareArray(idEdos(estadoInicial),idEdos(q))){
-            return true;
+            return estadoInicial;
         }
 
         for(EstadoAFD e : estados){
             if(compareArray(idEdos(q),idEdos(e))){
-                return true;
+                return e;
             }
         }
 
-        return false;
+        return null;
     }
 
     public ArrayList<Integer> idEdos(EstadoAFD e){
         ArrayList<Integer> idEstados = new ArrayList<Integer>();
             for(Estado edo: e.getSubEstados())
                 idEstados.add(edo.getId());
+
+        Collections.sort(idEstados);
+
         return idEstados;
     }
 
@@ -92,11 +96,10 @@ public class AFD {
             return false;
 
         for(int i=0;i<a.size();i++){
-            if(a.get(i)  != b.get(i)){
+            if(a.get(i) != b.get(i)){
                 return false;
             }
         }
-
         return true;
     }
 
@@ -129,12 +132,30 @@ public class AFD {
     }
 
     public void printTransiciones(){
-        /*
-        for(EstadoAFD estadoAFD : estados)
-          */
+        Iterator it;
+        Character key = ' ';
+        String value = "";
+        it = estadoInicial.getdTrans().keySet().iterator();
 
+        while(it.hasNext()){
+            value="";
+            key=it.next().toString().charAt(0);
+            EstadoAFD obj = (EstadoAFD)estadoInicial.getdTrans().get(key);
+            System.out.println("Key " + key + " Value " + obj.getId());
+        }
 
+        for(EstadoAFD estadoAFD : estados){
 
+            it = estadoAFD.getdTrans().keySet().iterator();
+
+            while (it.hasNext()){
+                value = "";
+                key = it.next().toString().charAt(0);
+                EstadoAFD obj = (EstadoAFD)estadoAFD.getdTrans().get(key);
+                value += obj.getId();
+                System.out.println("Key " + key + " Value " + value);
+            }
+        }
 
     }
 }
