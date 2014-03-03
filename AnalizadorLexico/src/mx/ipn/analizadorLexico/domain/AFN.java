@@ -2,14 +2,6 @@ package mx.ipn.analizadorLexico.domain;
 
 import java.util.*;
 
-
-/**
- * Created with IntelliJ IDEA.
- * User: Gamaliel
- * Date: 11/02/14
- * Time: 09:50 PM
- * To change this template use File | Settings | File Templates.
- */
 public class AFN {
 
     private ArrayList<Estado> estados;
@@ -36,6 +28,8 @@ public class AFN {
 
 
     public void unir(AFN f2) {
+        /*Se agregan los caracteres del f2*/
+        agregarAlfabeto(f2.getAlfabeto());
         /*Se cambia el estado inicial del automata y se agregan transiciones epsilon*/
         cambiaInicial(f2.getAllEdosFromAutomata());
         cambiaFinal();
@@ -44,6 +38,9 @@ public class AFN {
     public void conc(AFN f2) {
         ArrayList<Estado> edosf2 = f2.getAllEdosFromAutomata();
         Map<Character,Object> transicionesAux = new Hashtable<Character, Object>();
+
+        /*Se agregan los caracteres del f2*/
+        agregarAlfabeto(f2.getAlfabeto());
 
         /*Si el automata con el que se unirá es de más de dos estados*/
         for(int i=2;i<edosf2.size();i++){
@@ -83,6 +80,7 @@ public class AFN {
         transiciones.put('ε', transicionesEpsilon);
 
         edoFinalAux.setTransiciones(transiciones);
+
         /*El estado de final deja de ser final*/
         edoFinalAux.setEsEstadoAceptacion(false);
 
@@ -90,15 +88,13 @@ public class AFN {
         estadoInicial = new Estado(false);
         transicionesEpsilon = new ArrayList<Estado>();
         transiciones=new HashMap<Character, Object>();
+
         /*Se agregan dos transiciones epsilon al estado inicial*/
         transicionesEpsilon.add(edoInicialAux);
         transicionesEpsilon.add(estados.get(0));
         transiciones.put('ε',transicionesEpsilon);
         estadoInicial.setTransiciones(transiciones);
         estados.add(edoInicialAux);
-        //cleanAutomata(estadoInicial);
-        Integer id = new Integer(1);
-        etiquetaEstados(estadoInicial, id);
     }
 
     public void opc() {
@@ -290,5 +286,11 @@ public class AFN {
         }
 
         System.out.println("Key " + key + " Value:" + value);
+    }
+
+    public void agregarAlfabeto(ArrayList<Character> a){
+        for(Character c: a)
+            if(!alfabeto.contains(c))
+                alfabeto.add(c);
     }
 }

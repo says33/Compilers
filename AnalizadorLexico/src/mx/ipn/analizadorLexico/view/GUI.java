@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -39,4 +40,13 @@ public class GUI extends JFrame implements ActionListener{
     public void actionPerformed(ActionEvent e){
 
     }
+
+    public void paint(Graphics g){
+
+        g.setColor (Color.blue);
+        g.drawString("Primer linea",10,200);
+        g.drawString("Segunda linea",10,300);
+
+    }
+
 }

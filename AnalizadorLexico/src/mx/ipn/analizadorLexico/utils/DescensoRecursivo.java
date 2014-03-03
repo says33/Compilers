@@ -4,11 +4,8 @@ import mx.ipn.analizadorLexico.domain.ClaseLexica;
 import mx.ipn.analizadorLexico.domain.TokenCL;
 
 /**
- * Created with IntelliJ IDEA.
  * User: Gamaliel
  * Date: 11/02/14
- * Time: 10:34 PM
- * To change this template use File | Settings | File Templates.
  */
 public class DescensoRecursivo {
 
