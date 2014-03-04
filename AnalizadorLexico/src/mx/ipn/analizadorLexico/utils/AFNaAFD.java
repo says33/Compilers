@@ -25,6 +25,9 @@ public class AFNaAFD {
         ArrayList<Estado> subEdos;
         Map<Character,Object> dTran = new HashMap<Character,Object>();
 
+        /*Se asigna el alfabeto del AFN al AFD*/
+        afd.setAlfabeto(afn.getAlfabeto());
+
         EstadoAFD T = new EstadoAFD(false);
         subEdos = T.getSubEstados();
         subEdos.add(afn.getEstadoInicial());

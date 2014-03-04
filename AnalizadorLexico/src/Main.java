@@ -5,6 +5,7 @@
  * Time: 09:55 PM
  * To change this template use File | Settings | File Templates.
  */
+import mx.ipn.analizadorLexico.controller.AnalizadorLexicoController;
 import mx.ipn.analizadorLexico.view.GUI;
 
 import java.io.FileInputStream;
@@ -15,6 +16,9 @@ import java.io.FileNotFoundException;
 
 public class Main {
     public static void main(String[] args) {
-        GUI ventana = new GUI();
+        AnalizadorLexicoController al = new AnalizadorLexicoController();
+        al.getAFN();
+        /*
+        GUI ventana = new GUI();*/
     }
 }

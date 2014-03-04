@@ -16,11 +16,9 @@ public class AFD {
     private ArrayList<Character> alfabeto;
     private EstadoAFD estadoInicial;
     private ArrayList<EstadoAFD> estados;
-    private ArrayList<Integer> conjunto;
 
     public AFD(){
         estados = new ArrayList<EstadoAFD>();
-        conjunto = new ArrayList<Integer>();
         alfabeto = new ArrayList<Character>();
     }
 
@@ -40,12 +38,12 @@ public class AFD {
         this.estados = estados;
     }
 
-    public ArrayList<Integer> getConjunto() {
-        return conjunto;
+    public ArrayList<Character> getAlfabeto() {
+        return alfabeto;
     }
 
-    public void setConjunto(ArrayList<Integer> conjunto) {
-        this.conjunto = conjunto;
+    public void setAlfabeto(ArrayList<Character> alfabeto) {
+        this.alfabeto = alfabeto;
     }
 
     /*Método utilizado para comprobar si hay estados sin marcar en el AFD*/
@@ -156,6 +154,16 @@ public class AFD {
                 System.out.println("Key " + key + " Value " + value);
             }
         }
+    }
 
+    public ArrayList<EstadoAFD> getAllEdosOfAFD(){
+        ArrayList<EstadoAFD> edos = new ArrayList<EstadoAFD>();
+        edos.add(estadoInicial);
+
+        for(EstadoAFD edoAFD: estados){
+            edos.add(edoAFD);
+        }
+
+        return edos;
     }
 }

@@ -63,7 +63,33 @@ public class AFN {
     }
 
     public void cerrPos() {
-        //System.out.println("CerraduraPos");
+        ArrayList<Estado> transicionesEpsilon = new ArrayList<Estado>();
+        Map<Character,Object> transiciones = new HashMap<Character, Object>();
+
+        Estado edoFinalAux = estados.get(0);
+        estados.add(0,new Estado(true));
+        /*Se agrega una transición epsilon
+        * al estado inicial
+         */
+        transicionesEpsilon.add(estadoInicial);
+        transicionesEpsilon.add(estados.get(0));
+        transiciones.put('ε', transicionesEpsilon);
+
+        edoFinalAux.setTransiciones(transiciones);
+
+        /*El estado de final deja de ser final*/
+        edoFinalAux.setEsEstadoAceptacion(false);
+
+        Estado edoInicialAux = estadoInicial;
+        estadoInicial = new Estado(false);
+        transicionesEpsilon = new ArrayList<Estado>();
+        transiciones=new HashMap<Character, Object>();
+
+        /*Se agregan dos transiciones epsilon al estado inicial*/
+        transicionesEpsilon.add(edoInicialAux);
+        transiciones.put('ε',transicionesEpsilon);
+        estadoInicial.setTransiciones(transiciones);
+        estados.add(edoInicialAux);
     }
 
     public void cerrEstr() {
