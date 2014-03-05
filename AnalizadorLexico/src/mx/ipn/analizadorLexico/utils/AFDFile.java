@@ -3,6 +3,7 @@ import mx.ipn.analizadorLexico.domain.AFD;
 import mx.ipn.analizadorLexico.domain.EstadoAFD;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -20,7 +21,17 @@ public class AFDFile {
         File f = new File("C:/Files/estados.txt");
 
         try{
-            Integer size =afd.getAllEdosOfAFD().size();
+            Integer size = afd.getAllEdosOfAFD().size();
+            ArrayList<ArrayList<String>> tablaAFD = new ArrayList<ArrayList<String>>();
+            ArrayList<String> item = new ArrayList<String>();
+
+            /*Llenar alfabeto*/
+            for(int i=0;i<128;i++){
+
+            }
+
+        /*
+            Integer size = afd.getAllEdosOfAFD().size();
             String[][] line = new String[size][129];
             Integer counter = 0;
             f.createNewFile();
@@ -51,7 +62,7 @@ public class AFDFile {
             }
 
 
-            fo.close();
+            fo.close();*/
         }
         catch(Exception e){
 
