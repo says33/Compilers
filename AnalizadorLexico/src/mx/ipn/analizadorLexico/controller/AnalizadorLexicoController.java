@@ -1,10 +1,14 @@
 package mx.ipn.analizadorLexico.controller;
-
 import mx.ipn.analizadorLexico.domain.AFD;
 import mx.ipn.analizadorLexico.domain.AFN;
 import mx.ipn.analizadorLexico.service.AnalizadorLexicoService;
 import mx.ipn.analizadorLexico.utils.AFDFile;
 import mx.ipn.analizadorLexico.utils.AFNaAFD;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.HashMap;
+
 
 /**
  * Author: Gamaliel Jiménez
@@ -17,15 +21,51 @@ public class AnalizadorLexicoController {
 
     }
 
-    public void getAFN(){
-        AFNaAFD convertidor = new AFNaAFD();
+    public void createTable(){
         AFDFile afdFile = new AFDFile();
+
         AnalizadorLexicoService als = new AnalizadorLexicoService();
 
-        AFN afn = als.getFinalAutomata();
+        Map<Integer,Integer> tokens = new HashMap<Integer,Integer>();
+
+        /*Se leen los datos del archivo*/
+        ArrayList<Object> dataFromFile = als.readFromFile();
+        /*Arreglo que contiene todsas las expresiones regulares*/
+        ArrayList<String> regularExpressions = (ArrayList<String>)dataFromFile.get(0);
+        /*Arreglo que contiene el valor de todos los tokens de las expresiones regulares*/
+        ArrayList<Integer> tokenValues = (ArrayList<Integer>)dataFromFile.get(1);
+
+        /*Automata final*/
+        AFN afn = als.getFinalAutomata(regularExpressions,tokens,tokenValues);
+
+        //printTokens(tokens);
+
+        AFNaAFD afNaAFD = new AFNaAFD(tokens);
+
+        /*AFD para hacer la conversión de AFN a AFD*/
         AFD afd = new AFD();
-        convertidor.convierteAFNaAFD(afn,afd);
+
+        afNaAFD.convierteAFNaAFD(afn,afd);
         afd.printTransiciones();
         afdFile.createFile(afd);
+
+        printTokens(afNaAFD.getTokensAFD());
     }
+
+
+    public void printTokens(Map<Integer,Integer> map){
+        Iterator it = map.keySet().iterator();
+        Integer key;
+        Integer value;
+
+        while(it.hasNext()){
+            key = Integer.parseInt(it.next().toString());
+            value=map.get(key);
+
+            System.out.println("Estado " + key + " Token " + value);
+        }
+    }
+
+
+
 }

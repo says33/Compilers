@@ -16,8 +16,13 @@ import java.util.*;
  */
 public class AFNaAFD {
 
-    public AFNaAFD(){
+    private Map<Integer,Integer> tokensAFN;
+    private Map<Integer,Integer> tokensAFD;
 
+    /*Se inyectan los tokens por constructor*/
+    public AFNaAFD(Map<Integer,Integer> tokensAFN){
+        this.tokensAFN = tokensAFN;
+        tokensAFD = new Hashtable<Integer, Integer>();
     }
 
     public void convierteAFNaAFD(AFN afn,AFD afd){
@@ -28,12 +33,12 @@ public class AFNaAFD {
         /*Se asigna el alfabeto del AFN al AFD*/
         afd.setAlfabeto(afn.getAlfabeto());
 
-        EstadoAFD T = new EstadoAFD(false);
+        EstadoAFD T = new EstadoAFD();
         subEdos = T.getSubEstados();
         subEdos.add(afn.getEstadoInicial());
         T.setSubEstados(subEdos);
         subEdos = new ArrayList<Estado>();
-        subEdos = cerradurae(T.getSubEstados(),'ε');
+        subEdos = cerradurae(T.getSubEstados(),T);
 
         T.setSubEstados(subEdos);
         afd.setEstadoInicial(T);
@@ -46,8 +51,8 @@ public class AFNaAFD {
             ArrayList<Estado> subEstadosAFD = new ArrayList<Estado>();
 
             for(Character c: afn.getAlfabeto()){
-                EstadoAFD U = new EstadoAFD(false);
-                subEstadosAFD = cerradurae(afd.irA(aux,c),c);
+                EstadoAFD U = new EstadoAFD();
+                subEstadosAFD = cerradurae(afd.irA(aux,c),U);
                 U.setSubEstados(subEstadosAFD);
 
                 if((afd.estadoEnAFD(U) == null)){
@@ -57,20 +62,33 @@ public class AFNaAFD {
                         afd.setEstados(dEstados);
                     }
                 }
-                else{
+                else
                     U = afd.estadoEnAFD(U);
-                }
 
-                dTran = aux.getdTrans();
-                dTran.put(c,U);
-                aux.setdTrans(dTran);
+                if(U.getSubEstados().size() > 0){
+                    dTran = aux.getdTrans();
+                    dTran.put(c,U);
+                    aux.setdTrans(dTran);
+                }
             }
             id++;
         }
 
+        for(EstadoAFD edoAFD:afd.getAllEdosOfAFD()){
+            if(edoAFD.isEsEstadoAceptacion()){
+                System.out.println("IDAFD" + edoAFD.getId());
+                for(Estado e:edoAFD.getSubEstados()){
+                    if(tokensAFN.get(e.getId()) != null){
+                        tokensAFD.put(edoAFD.getId(),tokensAFN.get(e.getId()));
+                        break;
+                    }
+                }
+            }
+        }
+
     }
 
-    private ArrayList<Estado> cerradurae(ArrayList<Estado> T,Character c){
+    private ArrayList<Estado> cerradurae(ArrayList<Estado> T,EstadoAFD currentEdo){
         Stack<Estado> pila = new Stack<Estado>();
         /*Obtiene todos los subEstados que hay en el estado*/
 
@@ -82,6 +100,9 @@ public class AFNaAFD {
 
         /*Se llena la pila e inicializa e_cerradura*/
         for(Estado e: T){
+            if(tokensAFN.get(e.getId()) != null){
+                currentEdo.setEsEstadoAceptacion(true);
+            }
             pila.push(e);
             e_cerradura.add(e);
         }
@@ -89,10 +110,15 @@ public class AFNaAFD {
         while(!pila.isEmpty()){
             /*Se saca el EstadoAFD de la pila*/
             item = pila.pop();
-            auxEdos = getEstadosFromTransicion(item,c);
+
+            auxEdos = getEstadosFromTransicionEpsilon(item);
 
             for(Estado e : auxEdos){
                 if(!e_cerradura.contains(e)){
+                    /*Si hay un estado de aceptación*/
+                    if(tokensAFN.get(e.getId()) != null){
+                        currentEdo.setEsEstadoAceptacion(true);
+                    }
                     e_cerradura.add(e);
                     pila.push(e);
                 }
@@ -122,7 +148,8 @@ public class AFNaAFD {
         return edos;
     }
 
-    public ArrayList<Estado> getEstadosFromTransicion(Estado q,Character c){
+
+    public ArrayList<Estado> getEstadosFromTransicionEpsilon(Estado q){
         ArrayList<Estado> edos = new ArrayList<Estado>();
         Object obj = q.getTransiciones().get('ε');
 
@@ -132,14 +159,19 @@ public class AFNaAFD {
             for (Estado edo : (ArrayList<Estado>) obj)
                 edos.add(edo);
 
-        if(c != 'ε'){
-            obj = q.getTransiciones().get(c);
-            if (obj instanceof Estado)
-                edos.add((Estado) obj);
-            else if (obj instanceof ArrayList)
-                for (Estado edo : (ArrayList<Estado>) obj)
-                    edos.add(edo);
-        }
+        return edos;
+    }
+
+    public ArrayList<Estado> getEstadosFromTransicion(Estado q,Character c){
+        ArrayList<Estado> edos = new ArrayList<Estado>();
+
+        Object obj = q.getTransiciones().get(c);
+
+        if (obj instanceof Estado)
+            edos.add((Estado) obj);
+        else if (obj instanceof ArrayList)
+            for (Estado edo : (ArrayList<Estado>) obj)
+                edos.add(edo);
 
         return edos;
     }
@@ -150,5 +182,13 @@ public class AFNaAFD {
             edos.add(e);
 
         return edos;
+    }
+
+    public Map<Integer, Integer> getTokensAFD() {
+        return tokensAFD;
+    }
+
+    public void setTokensAFD(Map<Integer, Integer> tokensAFD) {
+        this.tokensAFD = tokensAFD;
     }
 }

@@ -7,6 +7,7 @@ public class AFN {
     private ArrayList<Estado> estados;
     private ArrayList<Character> alfabeto;
     private Estado estadoInicial;
+    private Integer token;
 
     public AFN() {
         alfabeto = new ArrayList<Character>();
@@ -151,6 +152,14 @@ public class AFN {
         this.estadoInicial = estadoInicial;
     }
 
+    public Integer getToken() {
+        return token;
+    }
+
+    public void setToken(Integer token) {
+        this.token = token;
+    }
+
     public ArrayList<Estado> getAllEdosFromAutomata() {
         ArrayList<Estado> edos = new ArrayList<Estado>();
 
@@ -240,13 +249,17 @@ public class AFN {
     }
 
 
-    public int etiquetaEstados(Estado ini, Integer id) {
+    public int etiquetaEstados(Estado ini, Integer id,Map<Integer,Integer> tokens,ArrayList<Integer> tokenValues) {
 
         if (ini.getId() != -1) {
             return id;
         } else {
             ini.setId(id);
             ++id;
+
+            if(ini.isEsEstadoAceptacion())
+                tokens.put(ini.getId(),tokenValues.get(tokens.size()));
+
             Iterator it = ini.getTransiciones().keySet().iterator();
             Character key = ' ';
 
@@ -255,10 +268,10 @@ public class AFN {
                 Object e = ini.getTransiciones().get(key);
 
                 if (e instanceof Estado)
-                    id = etiquetaEstados((Estado) e, id);
+                    id = etiquetaEstados((Estado) e, id,tokens,tokenValues);
                 else if (e instanceof ArrayList){
                     for (Estado edo : (ArrayList<Estado>) e)
-                        id = etiquetaEstados((Estado) edo, id);
+                        id = etiquetaEstados((Estado) edo, id,tokens,tokenValues);
                 }
             }
         }

@@ -1,8 +1,5 @@
 package mx.ipn.analizadorLexico.service;
-import mx.ipn.analizadorLexico.domain.AFN;
-import mx.ipn.analizadorLexico.domain.AFD;
-import mx.ipn.analizadorLexico.domain.Estado;
-import mx.ipn.analizadorLexico.domain.EstadoAFD;
+import mx.ipn.analizadorLexico.domain.*;
 import mx.ipn.analizadorLexico.utils.AFNaAFD;
 import mx.ipn.analizadorLexico.utils.Thompson;
 import java.io.BufferedReader;
@@ -14,8 +11,9 @@ import java.util.Map;
 
 public class AnalizadorLexicoService {
 
-    public AFN getFinalAutomata(){
-        ArrayList<String> regularExpressions = readFromFile();
+    public AFN getFinalAutomata(ArrayList<String> regularExpressions,Map<Integer,Integer> tokens,
+                                ArrayList<Integer> tokenValues){
+
         Thompson thompson = new Thompson();
 
         AFN finalAFN = new AFN();
@@ -25,30 +23,37 @@ public class AnalizadorLexicoService {
             afns.add(thompson.convertRE(regularExpressions.get(i)));
 
         uneAutomatas(afns,finalAFN);
-        finalAFN.etiquetaEstados(finalAFN.getEstadoInicial(),1);
+        finalAFN.etiquetaEstados(finalAFN.getEstadoInicial(),1,tokens,tokenValues);
 
-        return finalAFN;
         /*
+        //Impresión del AFN
+        System.out.println("Impresion AFN");
         for(Estado e: finalAFN.getAllEdosFromAutomata()){
             System.out.println(e.getId());
             finalAFN.printTransicionesEdo(e);
         }
-        System.out.println("\n");
-        */
+        System.out.println("\n");*/
+
+        return finalAFN;
 
     }
 
     /*Este método lee expresiones regulares de un archivo y las regresa*/
-    public ArrayList<String> readFromFile(){
+    public ArrayList<Object> readFromFile(){
 
+        ArrayList<Object> expresionesTokens = new ArrayList<Object>();
         ArrayList<String> lineas = new ArrayList<String>();
+        ArrayList<Integer> tokens = new ArrayList<Integer>();
 
         try{
             DataInputStream entrada = new DataInputStream(AnalizadorLexicoService.class.getResourceAsStream("/mx/ipn/analizadorLexico/utils/Regex.txt"));
             BufferedReader buffer = new BufferedReader(new InputStreamReader(entrada));
             String linea = "";
+            String[] subcadenas;
             while((linea=buffer.readLine()) !=null){
-                lineas.add(linea.split("\t")[0]);
+                subcadenas = linea.split("\t");
+                lineas.add(subcadenas[0]);
+                tokens.add(Integer.parseInt(subcadenas[1]));
             }
             entrada.close();
         }
@@ -56,7 +61,9 @@ public class AnalizadorLexicoService {
             System.out.println(e.getMessage());
         }
         finally {
-            return lineas;
+            expresionesTokens.add(lineas);
+            expresionesTokens.add(tokens);
+            return expresionesTokens;
         }
     }
 

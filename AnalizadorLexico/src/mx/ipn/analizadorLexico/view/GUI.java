@@ -19,7 +19,6 @@ public class GUI extends JFrame implements ActionListener{
     public GUI(){
         initializeComponents();
         AnalizadorLexicoController al = new AnalizadorLexicoController();
-        al.getAFN();
     }
 
     public void initializeComponents(){

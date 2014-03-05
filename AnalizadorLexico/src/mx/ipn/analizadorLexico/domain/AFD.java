@@ -135,6 +135,10 @@ public class AFD {
         String value = "";
         it = estadoInicial.getdTrans().keySet().iterator();
 
+        System.out.println(estadoInicial.getId() + ":" + estadoInicial.isEsEstadoAceptacion());
+        for(Estado edo: estadoInicial.getSubEstados())
+            System.out.println(edo.getId());
+
         while(it.hasNext()){
             value="";
             key=it.next().toString().charAt(0);
@@ -143,6 +147,11 @@ public class AFD {
         }
 
         for(EstadoAFD estadoAFD : estados){
+
+            System.out.println(estadoAFD.getId() + ":" + estadoAFD.isEsEstadoAceptacion());
+            for(Estado edo: estadoAFD.getSubEstados())
+                System.out.println(edo.getId());
+
 
             it = estadoAFD.getdTrans().keySet().iterator();
 

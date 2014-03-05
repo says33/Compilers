@@ -12,9 +12,10 @@ public class EstadoAFD {
     private boolean esEstadoAceptacion;
     private ArrayList<Estado> subEstados;
     private Map<Character,Object> dTrans;
+    private String token;
 
-    public EstadoAFD(boolean esEstadoAceptacion){
-        this.esEstadoAceptacion = esEstadoAceptacion;
+    public EstadoAFD(){
+        esEstadoAceptacion = false;
         subEstados = new ArrayList<Estado>();
         dTrans = new HashMap<Character, Object>();
     }
@@ -58,4 +59,11 @@ public class EstadoAFD {
         this.dTrans = dTrans;
     }
 
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
 }

@@ -17,7 +17,7 @@ import java.io.FileNotFoundException;
 public class Main {
     public static void main(String[] args) {
         AnalizadorLexicoController al = new AnalizadorLexicoController();
-        al.getAFN();
+        al.createTable();
         /*
         GUI ventana = new GUI();*/
     }
