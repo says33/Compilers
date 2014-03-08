@@ -15,7 +15,6 @@ public class Thompson {
 
     public AFN convertRE(String regularExpression){
         AFN afn = new AFN();
-
         /*Se crea la clase léxica que define la expresión regular*/
         ClaseLexica cl = new ClaseLexica();
         cl.setExpresionRegular(regularExpression);

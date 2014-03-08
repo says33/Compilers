@@ -18,6 +18,7 @@ public class AFNaAFD {
 
     private Map<Integer,Integer> tokensAFN;
     private Map<Integer,Integer> tokensAFD;
+    private Integer INICIO_ETIQUETA = 0;
 
     /*Se inyectan los tokens por constructor*/
     public AFNaAFD(Map<Integer,Integer> tokensAFN){
@@ -25,7 +26,7 @@ public class AFNaAFD {
         tokensAFD = new Hashtable<Integer, Integer>();
     }
 
-    public void convierteAFNaAFD(AFN afn,AFD afd){
+    public Map<Integer,Integer> convierteAFNaAFD(AFN afn,AFD afd){
         ArrayList<EstadoAFD> dEstados;
         ArrayList<Estado> subEdos;
         Map<Character,Object> dTran = new HashMap<Character,Object>();
@@ -44,9 +45,8 @@ public class AFNaAFD {
         afd.setEstadoInicial(T);
 
         EstadoAFD aux;
-        Integer id = new Integer(1);
 
-        while((aux = afd.edosSinMarcar(id)) != null){
+        while((aux = afd.edosSinMarcar(INICIO_ETIQUETA)) != null){
 
             ArrayList<Estado> subEstadosAFD = new ArrayList<Estado>();
 
@@ -71,12 +71,11 @@ public class AFNaAFD {
                     aux.setdTrans(dTran);
                 }
             }
-            id++;
+            INICIO_ETIQUETA++;
         }
 
         for(EstadoAFD edoAFD:afd.getAllEdosOfAFD()){
             if(edoAFD.isEsEstadoAceptacion()){
-                System.out.println("IDAFD" + edoAFD.getId());
                 for(Estado e:edoAFD.getSubEstados()){
                     if(tokensAFN.get(e.getId()) != null){
                         tokensAFD.put(edoAFD.getId(),tokensAFN.get(e.getId()));
@@ -86,6 +85,7 @@ public class AFNaAFD {
             }
         }
 
+        return tokensAFD;
     }
 
     private ArrayList<Estado> cerradurae(ArrayList<Estado> T,EstadoAFD currentEdo){

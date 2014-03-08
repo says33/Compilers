@@ -26,7 +26,7 @@ public class AnalizadorLexicoController {
 
         AnalizadorLexicoService als = new AnalizadorLexicoService();
 
-        Map<Integer,Integer> tokens = new HashMap<Integer,Integer>();
+        Map<Integer,Integer> tokensAFN = new HashMap<Integer,Integer>();
 
         /*Se leen los datos del archivo*/
         ArrayList<Object> dataFromFile = als.readFromFile();
@@ -36,22 +36,20 @@ public class AnalizadorLexicoController {
         ArrayList<Integer> tokenValues = (ArrayList<Integer>)dataFromFile.get(1);
 
         /*Automata final*/
-        AFN afn = als.getFinalAutomata(regularExpressions,tokens,tokenValues);
+        AFN afn = als.getFinalAutomata(regularExpressions,tokensAFN,tokenValues);
 
         //printTokens(tokens);
-
-        AFNaAFD afNaAFD = new AFNaAFD(tokens);
+        AFNaAFD afNaAFD = new AFNaAFD(tokensAFN);
 
         /*AFD para hacer la conversión de AFN a AFD*/
         AFD afd = new AFD();
 
-        afNaAFD.convierteAFNaAFD(afn,afd);
-        afd.printTransiciones();
-        afdFile.createFile(afd);
+        Map<Integer,Integer> tokensAFD = afNaAFD.convierteAFNaAFD(afn,afd);
+        //afd.printTransiciones();
+        afdFile.createFile(afd,tokensAFD);
 
-        printTokens(afNaAFD.getTokensAFD());
+        printTokens(tokensAFD);
     }
-
 
     public void printTokens(Map<Integer,Integer> map){
         Iterator it = map.keySet().iterator();
@@ -61,7 +59,6 @@ public class AnalizadorLexicoController {
         while(it.hasNext()){
             key = Integer.parseInt(it.next().toString());
             value=map.get(key);
-
             System.out.println("Estado " + key + " Token " + value);
         }
     }
