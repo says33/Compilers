@@ -1,9 +1,16 @@
 package mx.ipn.analizadorLexico.controller;
 import mx.ipn.analizadorLexico.domain.AFD;
 import mx.ipn.analizadorLexico.domain.AFN;
+import mx.ipn.analizadorLexico.domain.EstadoAFD;
 import mx.ipn.analizadorLexico.service.AnalizadorLexicoService;
 import mx.ipn.analizadorLexico.utils.AFDFile;
 import mx.ipn.analizadorLexico.utils.AFNaAFD;
+import mx.ipn.analizadorLexico.utils.Scanner;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectInput;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -19,6 +26,25 @@ public class AnalizadorLexicoController {
 
     public AnalizadorLexicoController(){
 
+    }
+
+    public void readTable(Scanner scanner){
+        try{
+            File afnTableFile = new File(AFDFile.class.getClass().getResource("/mx/ipn/analizadorLexico/utils/AFNTabla.bin").getFile());
+            FileInputStream fis = new FileInputStream(afnTableFile);
+            ObjectInputStream input = new ObjectInputStream(fis);
+
+            scanner.setTokensEdos((Map<Integer, Integer>) input.readObject());
+            scanner.setMapeoFilas((ArrayList<String>)input.readObject());
+            scanner.setMapeoColumnas((ArrayList<String>)input.readObject());
+            scanner.setTablaAFD((ArrayList<ArrayList<String>>)input.readObject());
+
+            fis.close();
+            input.close();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void createTable(){
@@ -45,10 +71,11 @@ public class AnalizadorLexicoController {
         AFD afd = new AFD();
 
         Map<Integer,Integer> tokensAFD = afNaAFD.convierteAFNaAFD(afn,afd);
-        //afd.printTransiciones();
+
+        afd.printTransiciones();
         afdFile.createFile(afd,tokensAFD);
 
-        printTokens(tokensAFD);
+        //printTokens(tokensAFD);
     }
 
     public void printTokens(Map<Integer,Integer> map){
@@ -63,6 +90,16 @@ public class AnalizadorLexicoController {
         }
     }
 
+    public void printTransiciones(Map<Character,Object> map){
+        Iterator it = map.keySet().iterator();
+        Character key;
+        Integer value;
 
+        while(it.hasNext()){
+            key = new Character(it.next().toString().charAt(0));
+            value = ((EstadoAFD)map.get(key)).getId();
+            System.out.println("Key " + key + " Edo " + value);
+        }
+    }
 
 }

@@ -54,13 +54,43 @@ public class AFDFile {
             Character key =' ';
             while (it.hasNext()){
                 key = it.next().toString().charAt(0);
+                System.out.println("key " + (int)key.charValue());
+                System.out.println(((EstadoAFD)edoAFD.getdTrans().get(key)).getId().toString());
                 tablaAFD.get(i).set((int)key.charValue(),((EstadoAFD)edoAFD.getdTrans().get(key)).getId().toString());
+
             }
+
             i++;
         }
 
+        /*
+        for(int l=0;l<tablaAFD.size();l++){
+            for(int k=0;k<tablaAFD.get(l).size();k++){
+                System.out.print(tablaAFD.get(l).get(k) + '\t');
+            }
+            System.out.println("");
+        } */
         reducirFilas(tablaAFD,mapFilas,edosId);
+
+        /*
+        System.out.println("");
+
+        for(int l=0;l<tablaAFD.size();l++){
+            for(int k=0;k<tablaAFD.get(l).size();k++){
+                System.out.print(tablaAFD.get(l).get(k) + '\t');
+            }
+            System.out.println("");
+        } */
+
         reducirColumnas(tablaAFD,mapColumnas,ascciCode);
+
+
+        for(int l=0;l<tablaAFD.size();l++){
+            for(int k=0;k<tablaAFD.get(l).size();k++){
+                System.out.print(tablaAFD.get(l).get(k) + '\t');
+            }
+            System.out.println("");
+        }
 
         try{
             File afnTableFile = new File(AFDFile.class.getClass().getResource("/mx/ipn/analizadorLexico/utils/AFNTabla.bin").getFile());
@@ -95,7 +125,7 @@ public class AFDFile {
                     j--;
                 }
                 else{
-                    mapeoFilas.set(Integer.parseInt(estados.get(j)),new Integer(i).toString());
+                    mapeoFilas.set(Integer.parseInt(estados.get(j)),new Integer(j).toString());
                 }
             }
         }
@@ -128,7 +158,7 @@ public class AFDFile {
                     l--;
                 }
                 else{
-                    mapeoColumnas.set((int)(ascii.get(l).charAt(0)),new Integer(i).toString());
+                    mapeoColumnas.set((int)(ascii.get(l).charAt(0)),new Integer(l).toString());
                 }
 
                 currentColumn.clear();
