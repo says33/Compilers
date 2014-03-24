@@ -3,43 +3,41 @@ package mx.ipn.analizadorSintactico.utils
 import mx.ipn.analizadorSintactico.domain.Lista
 import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.TokenScanner
+import mx.ipn.analizadorSintactico.utils.Scanner
 
-/**
- * Created with IntelliJ IDEA.
+/*
  * User: Gamaliel
  * Date: 18/03/14
- * Time: 07:08 PM
- * To change this template use File | Settings | File Templates.
  */
 class DescensoRecursivo {
 
     def scanner
 
-    def DescensoRecursivo(){
-        this.scanner = new Scanner()
+    def DescensoRecursivo(mx.ipn.analizadorSintactico.utils.Scanner scanner){
+        this.scanner = scanner
     }
 
     def G(Lista l){
         if(listaReglas(l))
-            true
-        false
+            return true
+        return false
     }
 
     def listaReglas(Lista l){
         def tok
-
         def laux = new Lista()
 
-        if(regla(laux)){
+        if(regla(l)){
             tok = scanner.getToken()
+
             if(tok==TokenScanner.PUNTOCOMA){
-                //[a]Guardar Edo Scanner
-                if(listaReglas(l)){
-                    laux.head.abajo = l
-                    l = laux
+                l.printList(l.head)
+                if(listaReglas(laux)){
+                    l.head.abajo = laux.head
+                    l.printList(l.head)
+                    println()
                     return true
                 }
-                //Regresar Edo del Scanner al Edo[a]
                 return true
             }
         }
@@ -48,36 +46,79 @@ class DescensoRecursivo {
     }
 
     def regla(Lista l){
-        int tok
+        def tok
         def laux = new Lista()
 
-        if(Li(l)){
+        if(Li(laux)){
             tok = scanner.getToken()
             if(tok==TokenScanner.FLECHA){
-                if(Ld(l)){
-                  //  laux.head.sig = l
-                   // l = laux
-                   // return true
+                if(listaLd(l)){
+                    laux.head.sig = l.head
+                    l.head = laux.head
+                    return true
                 }
+                return false
             }
+
+            scanner.regresarToken()
         }
 
         return false
     }
-
 
     def Li(Lista l){
         int tok
         tok = scanner.getToken()
 
         if(tok==TokenScanner.SIMB){
-            l.agregaNodo(scanner.getLexema())
+            def isTerminal = scanner.isTerminal()
+            l.agregaNodo(scanner.getLexema(),isTerminal)
+            return true
         }
-        l.head = null
+
+        return false
     }
 
 
-    def Ld(Lista l){
 
+    def listaLd(Lista l){
+        def tok
+
+        if(Ld(l)){
+            tok = scanner.getToken()
+            if(tok==TokenScanner.OR){
+                def laux = new Lista()
+
+                if(listaLd(laux)){
+                    l.head.abajo = laux.head
+                    return true;
+                }
+            }
+            scanner.regresarToken()
+            return true;
+        }
+        return false;
+    }
+
+    def Ld(Lista l){
+        if(listaSimb(l))
+            return true;
+        return false;
+    }
+
+    def listaSimb(Lista l){
+
+        def tok = scanner.getToken()
+
+        if(tok==TokenScanner.SIMB){
+            def isTerminal = scanner.isTerminal()
+
+            l.agregaNodo(scanner.getLexema(),isTerminal)
+            listaSimb(l)
+            return true
+        }
+
+        scanner.regresarToken()
+        return false
     }
 }

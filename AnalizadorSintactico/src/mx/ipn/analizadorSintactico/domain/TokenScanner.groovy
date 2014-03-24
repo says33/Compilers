@@ -12,9 +12,17 @@ class TokenScanner {
     def static final FLECHA = 600
     def static final OR = 700
     def static final SIMB = 800
+    /*Lista que guarda los carácteres de la gramática*/
+    def static alfabeto = []
 
-    def static tokensMap = ["→":TokenScanner.FLECHA,
-                            ";":TokenScanner.PUNTOCOMA,
-                            "|":TokenScanner.OR]
+    def static tokensMap = ['→':TokenScanner.FLECHA,
+                            ';':TokenScanner.PUNTOCOMA,
+                            '|':TokenScanner.OR]
 
+
+    def static addAlphabetToMap(){
+        alfabeto.each {
+            tokensMap.put(it,TokenScanner.SIMB)
+        }
+    }
 }

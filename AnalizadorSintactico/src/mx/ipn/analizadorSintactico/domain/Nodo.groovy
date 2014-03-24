@@ -9,6 +9,6 @@ package mx.ipn.analizadorSintactico.domain
 class Nodo {
     String simbolo
     Boolean esTerminal
-    Nodo sig
-    Nodo abajo
+    Nodo sig = null
+    Nodo abajo = null
 }

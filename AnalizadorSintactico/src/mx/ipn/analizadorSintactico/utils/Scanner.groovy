@@ -7,9 +7,12 @@ import mx.ipn.analizadorSintactico.domain.TokenScanner
  * Date: 19/03/14
  */
 class Scanner {
-    Integer current = 0
-    Integer prev = 0
+
+    Integer counter = 0
+    Integer current = -1
+    /*Gramática proveniente del archivo que será escaneada*/
     String gramatica
+    String lexema
     Integer ultimoTokenEncontrado
 
     def Scanner(def gramatica){
@@ -19,33 +22,67 @@ class Scanner {
 
     def getToken(){
         current++
+        counter++
+
+        println("Current  "+ current)
+        println("Counter " + counter)
 
         if(current < gramatica.length()){
-            println(gramatica.substring(prev,current))
-            return TokenScanner.tokensMap(gramatica.substring(prev,current))
+            lexema = gramatica.substring(current,counter)
+            return TokenScanner.tokensMap.get(String.valueOf(lexema.charAt(lexema.size()-1)))
         }
-
 
         return 0
     }
 
     def getLexema(){
-        gramatica.substring(prev,current)
-        /*Prev y current son iguales*/
-        prev = ++current
+        def lexema = gramatica.substring(current,counter)
+
+        println("Lexema " + lexema)
+
+        if(isTerminal(lexema)){
+
+            while(isTerminal((lexema = gramatica.substring(current,++counter)).charAt(lexema.length()-1))){
+                lexema = gramatica.substring(current,counter)
+            }
+            counter--
+            lexema = gramatica.substring(current,counter)
+            current = counter-1
+
+            return lexema
+        }
+
+        if(getToken() == TokenScanner.SIMB){
+            lexema = gramatica.substring(current,counter)
+            if(lexema == '\''){
+                lexema = gramatica.substring(current-1,counter)
+                return lexema
+            }
+
+        }
+
+        regresarToken()
+        lexema = gramatica.substring(current,counter)
     }
 
 
-    def isCharacter(def c){
-        if(c>='a' && c<='z' || c>='A' && c<='Z')
+    def isTerminal(){
+        def c = gramatica.substring(current,counter)
+
+        if(c>='A' && c<='Z')
+            return false
+        else
+            return true
+    }
+
+    def isTerminal(def c){
+        if(c>='a' && c<='z')
             return true
         return false
     }
 
-    def isDigit(def c){
-        if(c>='0' && c <='9')
-            return true
-        else
-            return false
+    def regresarToken(){
+        current--
+        counter--
     }
 }

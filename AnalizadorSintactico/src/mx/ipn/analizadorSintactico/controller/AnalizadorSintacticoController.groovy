@@ -18,14 +18,19 @@ class AnalizadorSintacticoController {
     }
 
     def crearListasGramaticas(){
-        def gramaticas = analizadorSintacticoService.linesFromFile()
+        def stringBuilder = new StringBuilder()
 
-        gramaticas.each{
-            def listOfLists = []
-            analizadorSintacticoService.createListFromProduction(it)
+        analizadorSintacticoService.linesFromFile().each{
+            stringBuilder.append(it)
         }
+
+        def gramaticas = stringBuilder.toString()
+
+        /*Se crea el alfabeto verificando cada carácter del archivo*/
+        analizadorSintacticoService.crearAlfabeto(gramaticas)
+
+        analizadorSintacticoService.createListFromProduction(gramaticas)
+
     }
-
-
 
 }
