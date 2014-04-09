@@ -24,8 +24,8 @@ class Scanner {
         current++
         counter++
 
-        println("Current  "+ current)
-        println("Counter " + counter)
+        //println("Current  "+ current)
+        //println("Counter " + counter)
 
         if(current < gramatica.length()){
             lexema = gramatica.substring(current,counter)
@@ -37,8 +37,6 @@ class Scanner {
 
     def getLexema(){
         def lexema = gramatica.substring(current,counter)
-
-        println("Lexema " + lexema)
 
         if(isTerminal(lexema)){
 

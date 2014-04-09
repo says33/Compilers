@@ -78,6 +78,4 @@ class Lista {
         println()
     }
 
-
 }
-

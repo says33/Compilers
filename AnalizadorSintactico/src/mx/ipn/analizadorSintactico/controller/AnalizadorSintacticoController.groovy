@@ -1,13 +1,12 @@
 package mx.ipn.analizadorSintactico.controller
 
-import mx.ipn.analizadorSintactico.domain.Lista
 import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
-import mx.ipn.analizadorSintactico.utils.DescensoRecursivo
+import mx.ipn.analizadorSintactico.utils.First
+import mx.ipn.analizadorSintactico.utils.Follow
+import mx.ipn.analizadorSintactico.view.GUI
 
 /**
- * Created with IntelliJ IDEA.
- * User: Gamaliel
- * To change this template use File | Settings | File Templates.
+ * Author: Gamaliel Jiménez
  */
 class AnalizadorSintacticoController {
 
@@ -29,8 +28,26 @@ class AnalizadorSintacticoController {
         /*Se crea el alfabeto verificando cada carácter del archivo*/
         analizadorSintacticoService.crearAlfabeto(gramaticas)
 
-        analizadorSintacticoService.createListFromProduction(gramaticas)
+        /*Lista de listas*/
+        def list = analizadorSintacticoService.createListFromProduction(gramaticas)
 
+        def mapOfLists = [:]
+
+        analizadorSintacticoService.createAMapOfLists(mapOfLists,list)
+
+        def first = new First(mapOfLists)
+
+        /*Calculo de todos los first*/
+        mapOfLists.each{
+            first.getFirstOfNodo(it.value)
+        }
+
+
+        def follow = new Follow(mapOfLists,first.mapOfFirst)
+
+        println(follow.getFollowOfNodo(mapOfLists.get("T")))
+
+        def gui = new GUI()
     }
 
 }

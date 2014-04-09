@@ -1,29 +1,87 @@
 package mx.ipn.analizadorSintactico.utils
 import mx.ipn.analizadorSintactico.domain.Nodo
-
-/**
- * Created with IntelliJ IDEA.
- * User: Gamaliel
- * Date: 19/03/14
- * Time: 12:38 PM
- * To change this template use File | Settings | File Templates.
+/*
+ * Author: Eduardo Gamaliel Jiménez García
  */
-
 class First {
 
-    def First(){
+    def mapOfLists
+    def mapOfFirst = [:]
+
+    def First(def mapOfLists){
+        this.mapOfLists  = mapOfLists
+    }
+
+    public void getFirstOfNodo(Nodo n){
+        def aux = n.sig
+        def auxb = aux.abajo
+        def listaAux = []
+        def lista = []
+        def mapa = [:]
+
+        lista.addAll(getFirst(aux,listaAux))
+
+        while (listaAux.contains('ε')){
+            listaAux = []
+            if((aux = aux.sig))
+                lista.addAll(getFirst(aux,listaAux))
+        }
+
+        lista.unique()
+        mapa.put(n.sig.simbolo,lista)
+
+        while(auxb){
+            lista = []
+            listaAux = []
+
+            lista.addAll(getFirst(auxb,listaAux))
+
+            while(listaAux.contains('ε')){
+                listaAux = []
+                if((aux = auxb.sig))
+                    lista.addAll(getFirst(aux,listaAux))
+            }
+
+            mapa.put(auxb.simbolo,lista)
+            auxb = auxb.abajo
+        }
+
+        mapOfFirst.(n.simbolo) = mapa
 
     }
 
-    def getFirst(Nodo n){
-
-        def simbNoTerminales = []
-
-        Stack<Nodo> pilaNodos = new Stack<Nodo>()
-        pilaNodos.add(n)
-
-        while(!pilaNodos.isEmpty()){
-
+    def getFirst(Nodo n,def lista){
+        if(!n.esTerminal)
+            getFirstOfNodo((mapOfLists.get(n.simbolo)),lista)
+        else{
+            if(!lista.contains(n.simbolo))
+                lista.add(n.simbolo)
+            return lista
         }
     }
+
+    def getFirstOfNodo(Nodo n, def lista){
+        def aux = n.sig
+        def auxb = aux.abajo
+
+        getFirst(aux,lista)
+
+        while(auxb){
+            getFirst(auxb,lista)
+            auxb = auxb.abajo
+        }
+
+        return lista
+    }
+
+    def getItemsOfFirst(def simbNodo){
+        def list = []
+
+        mapOfFirst.get(simbNodo).each {
+            list.addAll(it.value)
+        }
+
+        list
+    }
+
 }

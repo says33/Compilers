@@ -31,11 +31,11 @@ class DescensoRecursivo {
             tok = scanner.getToken()
 
             if(tok==TokenScanner.PUNTOCOMA){
-                l.printList(l.head)
+                //l.printList(l.head)
                 if(listaReglas(laux)){
                     l.head.abajo = laux.head
-                    l.printList(l.head)
-                    println()
+                    //l.printList(l.head)
+                    //println()
                     return true
                 }
                 return true

@@ -35,4 +35,16 @@ class AnalizadorSintacticoService {
         lista
     }
 
+
+    def createAMapOfLists(def map,def list){
+        def aux = list.head
+
+        map.put(aux.simbolo,aux)
+
+        while (aux.abajo){
+            aux = aux.abajo
+            map.put(aux.simbolo,aux)
+        }
+    }
+
 }
