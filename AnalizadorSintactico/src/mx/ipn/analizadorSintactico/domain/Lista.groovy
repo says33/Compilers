@@ -34,6 +34,7 @@ class Lista {
         nuevo.sig = null
         nuevo
     }
+
     /*Método para imprimir la lista*/
     def printList(){
         Nodo aux = head

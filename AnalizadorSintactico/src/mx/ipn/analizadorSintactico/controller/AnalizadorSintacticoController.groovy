@@ -3,7 +3,6 @@ package mx.ipn.analizadorSintactico.controller
 import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
 import mx.ipn.analizadorSintactico.utils.First
 import mx.ipn.analizadorSintactico.utils.Follow
-import mx.ipn.analizadorSintactico.view.GUI
 
 /**
  * Author: Gamaliel Jiménez
@@ -16,7 +15,7 @@ class AnalizadorSintacticoController {
         analizadorSintacticoService = new AnalizadorSintacticoService()
     }
 
-    def crearListasGramaticas(){
+    def crearListaGramaticas(){
         def stringBuilder = new StringBuilder()
 
         analizadorSintacticoService.linesFromFile().each{
@@ -35,6 +34,12 @@ class AnalizadorSintacticoController {
 
         analizadorSintacticoService.createAMapOfLists(mapOfLists,list)
 
+        mapOfLists
+
+    }
+
+    def calcularFirst(def mapOfLists){
+
         def first = new First(mapOfLists)
 
         /*Calculo de todos los first*/
@@ -42,12 +47,27 @@ class AnalizadorSintacticoController {
             first.getFirstOfNodo(it.value)
         }
 
+        first
+    }
 
+    def calcularFollow(def first,mapOfLists){
+
+        def mapOfFollow = [:]
+        def noTerminales = analizadorSintacticoService.getNoTerminalesConDerivacionEpsilon(mapOfLists)
         def follow = new Follow(mapOfLists,first.mapOfFirst)
 
-        println(follow.getFollowOfNodo(mapOfLists.get("T")))
+        noTerminales.each{ noTerminal ->
+            def auxmap = [:]
 
-        def gui = new GUI()
+            follow.getFollowOfNodo(mapOfLists.get(noTerminal)).each{
+                auxmap.put(it,"ε")
+            }
+
+            mapOfFollow.(noTerminal.toString()) = auxmap
+        }
+
+        mapOfFollow
     }
+
 
 }

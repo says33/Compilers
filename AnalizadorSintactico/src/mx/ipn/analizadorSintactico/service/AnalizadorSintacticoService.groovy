@@ -1,6 +1,7 @@
 package mx.ipn.analizadorSintactico.service
 
 import mx.ipn.analizadorSintactico.domain.Lista
+import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.TokenScanner
 import mx.ipn.analizadorSintactico.utils.DescensoRecursivo
 
@@ -45,6 +46,39 @@ class AnalizadorSintacticoService {
             aux = aux.abajo
             map.put(aux.simbolo,aux)
         }
+    }
+
+    def getNoTerminalesConDerivacionEpsilon(def map){
+
+        def list = []
+
+        map.each{
+            if(tieneDerivacionesEpsilon(it.value.sig))
+                list.add(it.value.simbolo)
+        }
+
+        list
+    }
+
+    def tieneDerivacionesEpsilon(Nodo n){
+
+        if(n.abajo)
+            if(tieneDerivacionesEpsilon(n.abajo))
+                return true
+
+        if(n.simbolo.equals("ε"))
+            return true
+
+        def aux = n.sig
+
+        while(aux){
+            if(aux.simbolo.equals("ε"))
+                return true
+
+            aux = aux.sig
+        }
+
+        false
     }
 
 }

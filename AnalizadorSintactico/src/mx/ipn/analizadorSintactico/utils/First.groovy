@@ -28,7 +28,11 @@ class First {
         }
 
         lista.unique()
-        mapa.put(n.sig.simbolo,lista)
+
+
+        lista.each {
+            mapa.put(it,getProduccion(n.sig))
+        }
 
         while(auxb){
             lista = []
@@ -42,7 +46,10 @@ class First {
                     lista.addAll(getFirst(aux,listaAux))
             }
 
-            mapa.put(auxb.simbolo,lista)
+            lista.each {
+                mapa.put(it,getProduccion(auxb))
+            }
+
             auxb = auxb.abajo
         }
 
@@ -82,6 +89,21 @@ class First {
         }
 
         list
+    }
+
+
+    def getProduccion(Nodo n){
+        def produccion = new StringBuilder()
+        produccion.append (n.simbolo)
+
+        def aux = n.sig
+
+        while (aux){
+            produccion.append (aux.simbolo)
+            aux = aux.sig
+        }
+
+        produccion.toString()
     }
 
 }

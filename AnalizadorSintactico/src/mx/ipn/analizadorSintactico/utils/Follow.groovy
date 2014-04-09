@@ -8,7 +8,7 @@ import mx.ipn.analizadorSintactico.domain.Nodo
 class Follow {
 
     def mapOfLists
-    def listOfFollow = [:]
+    def mapOfFollow = [:]
     def mapOfFirst
 
     def Follow(def mapOfLists,def mapOfFirst){
@@ -20,8 +20,8 @@ class Follow {
         def lista = []
         def nextNodes
 
-        if(listOfFollow.get(n.simbolo))
-            return listOfFollow.get(n.simbolo)
+        if(mapOfFollow.get(n.simbolo))
+            return mapOfFollow.get(n.simbolo)
 
         if(n.simbolo.equals(mapOfLists.iterator().next().value.simbolo))
             lista.add('$')
@@ -42,9 +42,6 @@ class Follow {
         }
         else
             lista.addAll(esExtremoProducciones(n.simbolo))
-        /*
-        println("Lista Final " + lista)
-        */
 
         lista
     }
@@ -112,7 +109,7 @@ class Follow {
         def list = []
 
         mapOfFirst.get(simbNodo).each {
-            list.addAll(it.value)
+            list.addAll(it.key)
         }
 
         list
