@@ -81,4 +81,36 @@ class AnalizadorSintacticoService {
         false
     }
 
+
+    def getItemsOfProd(String prod){
+        def lista = []
+
+        if(isLowerCase(prod.charAt(0))){
+            lista.add(prod)
+            return lista
+        }
+
+        for(int i=0;i<prod.size();i++){
+            if(i < prod.size()-1){
+                if(prod.charAt(i+1) == '\''){
+                    lista.add(prod.substring(i,i+2))
+                    i += 1
+                }
+                else
+                    lista.add(new Character(prod.charAt(i)).toString())
+            }
+            else if(prod.charAt(i) != '\'')
+                lista.add(new Character(prod.charAt(i)).toString())
+        }
+
+        lista
+    }
+
+    def isLowerCase(def c){
+        if(c>='a' && c <='z')
+            return true
+
+        false
+    }
+
 }

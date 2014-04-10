@@ -1,8 +1,7 @@
 package mx.ipn.analizadorSintactico.domain
 
 /**
- * User: Gamaliel
- *
+ * Author: Gamaliel Jiménez
  */
 class Lista {
 
@@ -77,6 +76,28 @@ class Lista {
             print(" " + aux.simbolo)
         }
         println()
+    }
+
+    def static terminalesSub(Nodo nodo){
+
+        def list = []
+
+        if(nodo.abajo){
+            list.addAll(terminalesSub(nodo.abajo))
+        }
+
+        def aux = nodo
+
+        if(aux.esTerminal)
+            list.add(aux.simbolo)
+
+        while(aux.sig){
+            aux = aux.sig
+            if(aux.esTerminal)
+                list.add(aux.simbolo)
+        }
+
+        list
     }
 
 }

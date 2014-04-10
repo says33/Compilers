@@ -7,10 +7,11 @@ import mx.ipn.analizadorSintactico.view.GUI
  */
 def analizadorSintacticoController = new AnalizadorSintacticoController()
 def mapOfLists =  analizadorSintacticoController.crearListaGramaticas()
-
+def terminales = analizadorSintacticoController.obtenerTerminales(mapOfLists)
 
 def first = analizadorSintacticoController.calcularFirst(mapOfLists)
 def follow = analizadorSintacticoController.calcularFollow(first,mapOfLists)
 
-def ventana = new GUI()
+
+def ventana = new GUI(terminales,first.mapOfFirst,follow)
 
