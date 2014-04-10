@@ -18,6 +18,7 @@ import java.awt.event.ActionListener
 
 class GUI extends JFrame{
 
+    def jTextFieldsRegEx
     def jTable
     def jTable2
     def jTable3
@@ -53,6 +54,12 @@ class GUI extends JFrame{
     }
 
     def initComponents(def listaTerminales){
+        jTextFieldsRegEx = []
+
+        listaTerminales.each{
+            jTextFieldsRegEx.add(new JTextField())
+        }
+
         jTabbedPane = new JTabbedPane()
         jPanel1 = new JPanel()
 
