@@ -17,7 +17,9 @@ public class Thompson {
         AFN afn = new AFN();
         /*Se crea la clase léxica que define la expresión regular*/
         ClaseLexica cl = new ClaseLexica();
+
         cl.setExpresionRegular(regularExpression);
+        System.out.println("Regular Expression  " + regularExpression);
 
         DescensoRecursivoLexico descensoRecursivo = new DescensoRecursivoLexico(cl);
         descensoRecursivo.E(afn);

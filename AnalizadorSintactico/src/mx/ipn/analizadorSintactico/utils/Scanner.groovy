@@ -15,71 +15,71 @@ class Scanner {
     String lexema
     Integer ultimoTokenEncontrado
 
-    def Scanner(def gramatica){
+    def Scanner(def gramatica) {
         this.gramatica = gramatica
     }
 
 
-    def getToken(){
+    def getToken() {
         current++
         counter++
 
         //println("Current  "+ current)
         //println("Counter " + counter)
 
-        if(current < gramatica.length()){
-            lexema = gramatica.substring(current,counter)
-            return TokenScanner.tokensMap.get(String.valueOf(lexema.charAt(lexema.size()-1)))
+        if (current < gramatica.length()) {
+            lexema = gramatica.substring(current, counter)
+            return TokenScanner.tokensMap.get(String.valueOf(lexema.charAt(lexema.size() - 1)))
         }
 
         return 0
     }
 
-    def getLexema(){
-        def lexema = gramatica.substring(current,counter)
+    def getLexema() {
+        def lexema = gramatica.substring(current, counter)
 
-        if(isTerminal(lexema)){
+        if (isTerminal(lexema)) {
 
-            while(isTerminal((lexema = gramatica.substring(current,++counter)).charAt(lexema.length()-1))){
-                lexema = gramatica.substring(current,counter)
+            while (isTerminal((lexema = gramatica.substring(current, ++counter)).charAt(lexema.length() - 1))) {
+                lexema = gramatica.substring(current, counter)
             }
             counter--
-            lexema = gramatica.substring(current,counter)
-            current = counter-1
+            lexema = gramatica.substring(current, counter)
+            current = counter - 1
 
             return lexema
         }
 
-        if(getToken() == TokenScanner.SIMB){
-            lexema = gramatica.substring(current,counter)
-            if(lexema == '\''){
-                lexema = gramatica.substring(current-1,counter)
+        if (getToken() == TokenScanner.SIMB) {
+            lexema = gramatica.substring(current, counter)
+            if (lexema == '\'') {
+                lexema = gramatica.substring(current - 1, counter)
                 return lexema
             }
 
         }
 
         regresarToken()
-        lexema = gramatica.substring(current,counter)
+        lexema = gramatica.substring(current, counter)
     }
 
 
-    def isTerminal(){
-        def c = gramatica.substring(current,counter)
+    def isTerminal() {
+        def c = gramatica.substring(current, counter)
 
-        if(c>='A' && c<='Z')
+        if (c >= 'A' && c <= 'Z')
             return false
         else
             return true
     }
 
-    def isTerminal(def c){
-        if(c>='a' && c<='z')
+    def isTerminal(def c) {
+        if (c >= 'a' && c <= 'z')
             return true
         return false
     }
 
-    def regresarToken(){
+    def regresarToken() {
         current--
         counter--
     }

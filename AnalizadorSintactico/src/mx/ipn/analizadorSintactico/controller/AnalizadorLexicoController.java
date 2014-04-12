@@ -9,6 +9,7 @@ import mx.ipn.analizadorSintactico.utils.AFNaAFD;
 import mx.ipn.analizadorSintactico.utils.Scanner;
 import mx.ipn.analizadorSintactico.utils.ScannerLexico;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -31,7 +32,7 @@ public class AnalizadorLexicoController {
 
     public void readTable(ScannerLexico scanner){
         try{
-            File afnTableFile = new File(AFDFile.class.getClass().getResource("/mx/ipn/analizadorLexico/utils/AFNTabla.bin").getFile());
+            File afnTableFile = new File("C:\\Users\\Gamaliel\\Documents\\ESCOM\\AFNTabla.bin");
             FileInputStream fis = new FileInputStream(afnTableFile);
             ObjectInputStream input = new ObjectInputStream(fis);
 
@@ -48,7 +49,7 @@ public class AnalizadorLexicoController {
         }
     }
 
-    public void createTable(){
+    public void createTable(ArrayList<JTextField> arrayOfRegex,ArrayList<JTextField> arrayOfToken){
         AFDFile afdFile = new AFDFile();
 
         AnalizadorLexicoService als = new AnalizadorLexicoService();
@@ -56,11 +57,14 @@ public class AnalizadorLexicoController {
         Map<Integer,Integer> tokensAFN = new HashMap<Integer,Integer>();
 
         /*Se leen los datos del archivo*/
-        ArrayList<Object> dataFromFile = als.readFromFile();
+        //ArrayList<Object> dataFromFile = als.readFromFile();
+        ArrayList<Object> dataFromGUI = als.getDataFromGUI(arrayOfRegex,arrayOfToken);
         /*Arreglo que contiene todsas las expresiones regulares*/
-        ArrayList<String> regularExpressions = (ArrayList<String>)dataFromFile.get(0);
+        //ArrayList<String> regularExpressions = (ArrayList<String>)dataFromFile.get(0);
+        ArrayList<String> regularExpressions = (ArrayList<String>)dataFromGUI.get(0);
         /*Arreglo que contiene el valor de todos los tokens de las expresiones regulares*/
-        ArrayList<Integer> tokenValues = (ArrayList<Integer>)dataFromFile.get(1);
+        //ArrayList<Integer> tokenValues = (ArrayList<Integer>)dataFromFile.get(1);
+        ArrayList<Integer> tokenValues = (ArrayList<Integer>)dataFromGUI.get(1);
 
         /*Automata final*/
         AFN afn = als.getFinalAutomata(regularExpressions,tokensAFN,tokenValues);

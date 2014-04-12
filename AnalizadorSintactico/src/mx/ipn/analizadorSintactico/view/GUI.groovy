@@ -1,8 +1,12 @@
 package mx.ipn.analizadorSintactico.view
 
-//import groovy.swing.SwingBuilder
+import mx.ipn.analizadorSintactico.controller.AnalizadorLexicoController
 import mx.ipn.analizadorSintactico.controller.AnalizadorSintacticoController
+
+//import groovy.swing.SwingBuilder
+import mx.ipn.analizadorSintactico.utils.ScannerLexico
 import javax.swing.JButton
+import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTabbedPane
@@ -19,6 +23,10 @@ import java.awt.event.ActionListener
 class GUI extends JFrame{
 
     def jTextFieldsRegEx
+    def jTextFieldTokens
+    def jLabelTerminales
+    def buttonLexicalAnalyzer
+    def scanner
     def jTable
     def jTable2
     def jTable3
@@ -36,6 +44,8 @@ class GUI extends JFrame{
     def follow
     def simbInicial
     def listTerminales
+    def mapTerminalToken=[:]
+
 
     def GUI(def listTerminales, def first, def follow){
         this.first = first
@@ -54,17 +64,56 @@ class GUI extends JFrame{
     }
 
     def initComponents(def listaTerminales){
-        jTextFieldsRegEx = []
+        def listWithOutEpsilon = []
 
-        listaTerminales.each{
+        listWithOutEpsilon.addAll(listaTerminales)
+        listWithOutEpsilon.remove('ε')
+
+        jTextFieldsRegEx = []
+        jTextFieldTokens = []
+        jLabelTerminales = []
+        buttonLexicalAnalyzer = new JButton("Crear")
+        buttonLexicalAnalyzer.setBounds(20,100,100,30)
+        buttonLexicalAnalyzer.addActionListener(new ActionListener() {
+            @Override
+            void actionPerformed(ActionEvent e) {
+                scanner = new ScannerLexico()
+                def i = 0
+                def analizadorLexicoController = new AnalizadorLexicoController()
+                analizadorLexicoController.createTable(jTextFieldsRegEx,jTextFieldTokens)
+                jTextFieldTokens.each {
+                    mapTerminalToken.put(it.getText(),listWithOutEpsilon[i])
+                    i++
+                }
+
+                mapTerminalToken.put('0','$')
+
+                analizadorLexicoController.readTable(scanner)
+            }
+        })
+
+        def x = 20,xlabel = 30;
+        def i=0,j=0
+
+        listWithOutEpsilon.each{
             jTextFieldsRegEx.add(new JTextField())
+            jTextFieldTokens.add(new JTextField())
+            jLabelTerminales.add(new JLabel(it))
+        }
+
+        listWithOutEpsilon.each {
+            jTextFieldsRegEx[i].setBounds(x,30,70,20)
+            jTextFieldTokens[i].setBounds(x,60,70,20)
+            jLabelTerminales[i].setBounds(xlabel,5,70,30)
+            x+=100;
+            xlabel += 100;
+            i++
         }
 
         jTabbedPane = new JTabbedPane()
         jPanel1 = new JPanel()
-
         jPanel1.setSize(700,500)
-        jPanel1.setLayout(new GridLayout(1,1))
+        jPanel1.setLayout(null)
         //jpanel.setBackground(Color.black)
 
         String[] columns = listaTerminales.toArray()
@@ -76,7 +125,16 @@ class GUI extends JFrame{
         jTable = new JTable(data,columns)
         jScrollPane = new JScrollPane(jTable)
         jScrollPane.setPreferredSize(new Dimension(400,400))
-        jPanel1.add(jScrollPane)
+        //jPanel1.add(jScrollPane)
+        i = 0
+        listWithOutEpsilon.each {
+            jPanel1.add(jLabelTerminales[i])
+            jPanel1.add(jTextFieldsRegEx[i])
+            jPanel1.add(jTextFieldTokens[i])
+            i++
+        }
+
+        jPanel1.add(buttonLexicalAnalyzer)
         jTabbedPane.addTab("AnalizadorLexico",jPanel1)
 
     }
@@ -99,9 +157,13 @@ class GUI extends JFrame{
         jButton.addActionListener(new ActionListener() {
             @Override
             void actionPerformed(ActionEvent e) {
-                def analizadorController = new AnalizadorSintacticoController()
+                scanner.cleanScanner()
+                def analizadorController = new AnalizadorSintacticoController(mapTerminalToken)
                 def i=0,j=0
-                def list = analizadorController.analizaCadena(jTextField.getText(),first,follow,listTerminales)
+
+
+                def list = analizadorController.analizaCadena(first,follow,listTerminales,scanner.tokenizaCadena(jTextField.getText()))
+
                 String[][] datos = new String[list.size()][list.get(0).size()]
 
                 list.each { lista ->

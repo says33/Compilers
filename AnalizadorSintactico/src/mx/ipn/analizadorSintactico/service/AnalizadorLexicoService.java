@@ -5,6 +5,7 @@ import mx.ipn.analizadorSintactico.domain.Estado;
 import mx.ipn.analizadorSintactico.utils.Thompson;
 
 
+import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
@@ -41,6 +42,22 @@ public class AnalizadorLexicoService {
 
     }
 
+
+    public ArrayList<Object> getDataFromGUI(ArrayList<JTextField> arrayOfRegex,ArrayList<JTextField> arrayOfTokens){
+        ArrayList<Object> expresionesTokens = new ArrayList<Object>();
+        ArrayList<String> lineas = new ArrayList<String>();
+        ArrayList<Integer> tokens = new ArrayList<Integer>();
+
+        for(int i=0;i<arrayOfRegex.size();i++){
+            lineas.add(arrayOfRegex.get(i).getText());
+            tokens.add(Integer.parseInt(arrayOfTokens.get(i).getText()));
+        }
+
+        expresionesTokens.add(lineas);
+        expresionesTokens.add(tokens);
+
+        return expresionesTokens;
+    }
     /*Este método lee expresiones regulares de un archivo y las regresa*/
     public ArrayList<Object> readFromFile(){
 

@@ -11,9 +11,11 @@ import mx.ipn.analizadorSintactico.utils.Follow
 class AnalizadorSintacticoController {
 
     def analizadorSintacticoService
+    def mapTerminalToken
 
-    def AnalizadorSintacticoController(){
+    def AnalizadorSintacticoController(def mapTerminalToken){
         analizadorSintacticoService = new AnalizadorSintacticoService()
+        this.mapTerminalToken = mapTerminalToken
     }
 
     def crearListaGramaticas(){
@@ -81,57 +83,66 @@ class AnalizadorSintacticoController {
     }
 
 
-    def analizaCadena(String cadena,def first,def follow,def terminales){
+    def analizaCadena(def first,def follow,def terminales,def lexemasAndTokens){
 
         def datos = []
         def listData = []
         def auxString = ""
 
-        def inputArray = getItemsFromCadena(cadena,terminales)
-        inputArray.add('$')
+        def inputArray = []
+        def cadena = []
+        def subcadena = ""
+
+        lexemasAndTokens.each{
+            cadena.add(it.get(0))
+            inputArray.add(it.get(1))
+        }
+
+
+        subcadena = concat(cadena)
 
         Stack<String> pila = new Stack<String>()
         pila.push('$')
         pila.push(first.iterator().next().key)
 
         listData.add('$')
-        listData.add(cadena)
+        listData.add("")
         listData.add("push (${first.iterator().next().key})")
-        datos.add(listData)
 
-        println(first)
-        println(follow)
+        datos.add(listData)
 
         def pointer = 0
         def a = inputArray.get(pointer)
         def X = pila.peek()
 
-
         while(!X.equals('$')){
             listData = []
             auxString = ""
 
-            if(X.equals(a)){
+            if(X.equals(mapTerminalToken.get(a))){
                 pila.elements().each{
                     auxString+=it
                 }
                 listData.add(auxString)
-                listData.add(cadena)
+                listData.add(subcadena)
                 listData.add("pop (${pila.peek()})")
 
                 pila.pop()
-                cadena = cadena.substring(a.length(),cadena.length())
+                //cadena = cadena.substring(a.length(),cadena.length())
                 pointer++;
                 a = inputArray.get(pointer)
+
+                subcadena = subcadena.substring(cadena.get(pointer-1).length(),subcadena.length())
+
             }
-            else if(first.get(X)?.get(a)){
-                def items = analizadorSintacticoService.getItemsOfProd(first.get(X)?.get(a))
+            else if(first.get(X)?.get(mapTerminalToken.get(a))){
+                def items = analizadorSintacticoService.getItemsOfProd(first.get(X)?.get(mapTerminalToken.get(a)))
 
                 pila.elements().each{
                     auxString+=it
                 }
                 listData.add(auxString)
-                listData.add(cadena)
+                listData.add(subcadena)
                 auxString = ""
 
                 items.each{
@@ -148,14 +159,14 @@ class AnalizadorSintacticoController {
                     pila.push(it)
                 }
             }
-            else if(follow.get(X)?.get(a)){
+            else if(follow.get(X)?.get(mapTerminalToken.get(a))){
                 pila.elements().each{
                     auxString+=it
                 }
 
                 listData.add(auxString)
-                listData.add(cadena)
-                listData.add(follow.get(X)?.get(a))
+                listData.add(subcadena)
+                listData.add(follow.get(X)?.get(mapTerminalToken.get(a)))
 
                 pila.pop()
             }
@@ -163,49 +174,36 @@ class AnalizadorSintacticoController {
                 return datos
             }
 
-
             datos.add(listData)
 
             X = pila.peek()
-
         }
+
 
         listData = []
         listData.add('$')
-        listData.add(cadena)
+        listData.add("")
         listData.add("ACCEPTED")
 
         datos.add(listData)
-
         datos
     }
 
-    def getItemsFromCadena(String cadena,def terminales){
-        def list = []
-
-        def subStr = ""
-        def counter = 0
-        while (counter<cadena.length()){
-            if(isTerminal(subStr,terminales)){
-                list.add(subStr)
-                subStr = ""
-            }
-            else{
-                subStr+=cadena.charAt(counter)
-                counter++
-            }
-        }
-
-        if(subStr)
-            list.add(subStr)
-
-        list
-    }
 
     def isTerminal(String cadena,def terminales){
         if(terminales.contains(cadena))
             return true
         false
+    }
+
+    def concat(inputArray){
+        def cadena = new StringBuilder()
+
+        inputArray.each{
+            cadena.append(it)
+        }
+
+        cadena.toString()
     }
 
 }

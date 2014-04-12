@@ -95,8 +95,7 @@ public class AFDFile {
         }
 
         try{
-            File afnTableFile = new File(AFDFile.class.getClass().getResource("/mx/ipn/analizadorLexico/utils/AFNTabla.bin").getFile());
-
+            File afnTableFile = new File("C:\\Users\\Gamaliel\\Documents\\ESCOM\\AFNTabla.bin");
             FileOutputStream fo = new FileOutputStream(afnTableFile);
             ObjectOutputStream out = new ObjectOutputStream(fo);
 

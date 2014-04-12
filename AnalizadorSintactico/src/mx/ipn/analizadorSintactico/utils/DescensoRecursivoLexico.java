@@ -109,6 +109,7 @@ public class DescensoRecursivoLexico {
     boolean F(AFN f1){
         Integer tok;
         tok = lexic.yylex();
+
         if(tok == TokenCL.PAR_I){
             if(E(f1)){
                 tok = lexic.yylex();
