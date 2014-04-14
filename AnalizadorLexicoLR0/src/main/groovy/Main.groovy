@@ -1,17 +1,35 @@
 import static groovyx.javafx.GroovyFX.start
 
-start {
-    stage(title: 'GroovyFX Hello World', visible: true) {
-        scene(fill: BLACK, width: 500, height: 250) {
-            hbox(padding: 60) {
-                text(text: 'Groovy', font: '80pt sanserif') {
-                    fill linearGradient(endX: 0, stops: [PALEGREEN, SEAGREEN])
+
+start{
+    def fileChooser = fileChooser(initialDirectory: ".", title: "FileChooser Demo"){
+                          filter("images", extensions: ["jpg", "gif", "bmp"])
+                      }
+
+    stage(title: 'Analizador Léxico-Sintáctico', show: true) {
+        scene(fill: GROOVYBLUE, width:1000,height:600) {
+            borderPane(){
+                top(){
+                    menuBar{
+                        menu(text: "Archivo"){
+                            menuItem("Abrir",onAction: {println "Abrir Archivo"})
+                        }
+                    }
                 }
-                text(text: 'FX', font: '80pt sanserif') {
-                    fill linearGradient(endX: 0, stops: [CYAN, DODGERBLUE])
-                    effect dropShadow(color: DODGERBLUE, radius: 25, spread: 0.25)
+                tabPane(){
+                    tab(text:'Analizador Lexico'){
+                        borderPane(){                            
+                            gridPane(hgap: 5, vgap: 10, padding: 25, alignment: "center"){        
+                            label("Name", hgrow: "never", row: 1, column: 0, textFill: white)
+                            textField(promptText: "Your name", row: 1, column: 1)
+                            } 
+                        } 
+                    }
+                    tab(text:'Analizador Sintáctico'){
+
+                    }
                 }
-            }
-        }
+            }        
+        }        
     }
 }

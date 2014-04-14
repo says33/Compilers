@@ -13,7 +13,7 @@ dependencies{
 }
 
 task run(type: JavaExec) {
-    main = 'helloGroovyFX'
+    main = 'Main'
     classpath sourceSets.main.runtimeClasspath
 }
  
@@ -27,4 +27,13 @@ task makeDirs(description:'make all dirs for project setup') << {
  
 task wrap(type:Wrapper, description:"create a gradlew") {
     gradleVersion = '1.0-rc-3'
+}
+
+task uberjar(type: Jar,dependsOn:[':compileJava',':compileGroovy']){
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect{ zipTree(it) }
+
+    manifest{
+        attributes 'Main-Class':'Main'
+    }
 }
