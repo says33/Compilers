@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" tests="1" failures="0" errors="0" timestamp="2014-04-18T06:51:19" hostname="mbp-de-gamaliel.lan" time="0.119">
+  <properties/>
+  <testcase name="anotherSample" classname="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" time="0.119"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
