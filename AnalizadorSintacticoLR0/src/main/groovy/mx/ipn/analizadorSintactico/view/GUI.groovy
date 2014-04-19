@@ -5,12 +5,13 @@ import mx.ipn.analizadorSintactico.controller.AnalizadorSintacticoController
 
 class GUI{
 
-	/*The constructor initialize the GUI of the application-
+	def analizadorSintacticoController
+  def mapaDeListas
+  /*The constructor initialize the GUI of the application-
 	  El constructor inicializa la Interfaz de Usuario de la aplicacion*/
-
 	def GUI(){
 		
-    def analizadorSintacticoController = new AnalizadorSintacticoController();
+    analizadorSintacticoController = new AnalizadorSintacticoController();
 
 		start{
 			final fileChooser = fileChooser(initialDirectory: ".", title: "Selecciona Gramatica"){
@@ -24,7 +25,8 @@ class GUI{
                     		menuBar{
                         		menu(text: "Archivo"){
                             		menuItem("Abrir",onAction: {
-                                    analizadorSintacticoController.crearLista(fileChooser.showOpenDialog(primaryStage))
+                                    mapaDeListas = analizadorSintacticoController.crearLista(fileChooser.showOpenDialog(primaryStage))
+                                    analizadorSintacticoController.crearItems(mapaDeListas)
                                 })
                         		}
                     		}
@@ -33,8 +35,8 @@ class GUI{
                     		tab(text:'Analizador Lexico'){
                         		borderPane(){                            
                             		gridPane(hgap: 5, vgap: 10, padding: 25, alignment: "center"){        
-                            			label("Name", hgrow: "never", row: 1, column: 0, textFill: white)
-                            			textField(promptText: "Your name", row: 1, column: 1)
+                            			//label("Name", hgrow: "never", row: 1, column: 0, textFill: white)
+                            			//textField(promptText: "Your name", row: 1, column: 1)
                             		} 
                         		} 
                     		}

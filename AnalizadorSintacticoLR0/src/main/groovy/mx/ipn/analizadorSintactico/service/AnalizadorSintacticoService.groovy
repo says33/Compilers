@@ -49,8 +49,7 @@ class AnalizadorSintacticoService {
         def scanner = new ScannerSintactico(gramatica)
         def descensoRecursivo = new DescensoRecursivo(scanner)
         descensoRecursivo.G(lista)        
-        aumentarGramatica(lista)
-        lista.printList(lista.head)
+        aumentarGramatica(lista)        
         lista
     }
 
@@ -66,17 +65,18 @@ class AnalizadorSintacticoService {
         lista.head = nGp        
     }
 
-    
-    /*This function will create a list of a Production*/
-    /*def createListFromProduction(String production){
-        def lista = new Lista()
-        def scanner = new mx.ipn.analizadorSintactico.utils.Scanner(production)
-        def descensoRecursivo = new DescensoRecursivo(scanner)
-        descensoRecursivo.G(lista)
-        lista
+    def crearMapaDeListas(def mapa,def lista){
+        def aux = lista.head
+        mapa.put(aux.simbolo,aux)
+
+        while(aux.abajo) {
+            aux = aux.abajo
+            mapa.put(aux.simbolo,aux)
+        }
     }
 
 
+/*
     def createAMapOfLists(def map,def list){
         def aux = list.head
 

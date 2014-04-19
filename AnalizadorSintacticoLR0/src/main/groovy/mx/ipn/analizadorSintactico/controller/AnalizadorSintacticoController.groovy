@@ -2,6 +2,7 @@ package mx.ipn.analizadorSintactico.controller
 
 import org.apache.log4j.*
 import groovy.util.logging.*
+import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.Lista
 import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
 //import mx.ipn.analizadorSintactico.utils.First
@@ -13,13 +14,10 @@ import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
 
 @Log4j
 class AnalizadorSintacticoController {
-
-    def PATTERN = "%d{ABSOLUTE} %-5p [%c{1}] %m%n"
+    
     def analizadorSintacticoService
 
     def AnalizadorSintacticoController(){       
-       def simple = new PatternLayout(PATTERN)
-       BasicConfigurator.configure(new ConsoleAppender(simple))   
        log.level = Level.DEBUG
        analizadorSintacticoService = new AnalizadorSintacticoService()
     }    
@@ -37,9 +35,75 @@ class AnalizadorSintacticoController {
        log.debug gramatica
 
        analizadorSintacticoService.crearAlfabeto(gramatica)
-       def list = analizadorSintacticoService.crearListaGramatica(gramatica)
+       def lista = analizadorSintacticoService.crearListaGramatica(gramatica)
+       def mapaDeListas = [:]
+       analizadorSintacticoService.crearMapaDeListas(mapaDeListas,lista)
+
+       mapaDeListas
     }
 
+
+    def crearItems(def mapaDeListas){
+        mapaDeListas.each{ key,value ->
+            log.debug 'Inicio de Calculo de Items'
+            getItemsFromNodo(value)
+            log.debug 'Fin de Calculo de Items'
+        }
+    }
+
+    def getItemsFromNodo(Nodo n){        
+        def auxs = n.sig            
+        log.debug "${n.simbolo}→"
+
+        getItemsFromProductions(auxs)
+    }
+
+    
+    def getItemsFromProductions(Nodo n){
+
+        if(n.abajo)        
+            getItemsFromProductions(n.abajo)
+
+        def indexPoint = 0
+        getItem(n,indexPoint)
+        def aux = n.sig
+        
+        
+        while(aux){
+            indexPoint++
+            getItem(n,indexPoint)
+            aux = aux.sig
+        }
+
+        indexPoint++
+        getItem(n,indexPoint)
+
+    }
+
+    def getItem(Nodo n,Integer indexPoint){
+        def itemProd=""
+        def aux = n
+        def counter = 1
+
+        if(!indexPoint)
+            itemProd+="."
+
+        itemProd+=aux.simbolo
+        
+        while(aux.sig){
+            if(counter == indexPoint)
+                itemProd+="."
+            
+            aux = aux.sig
+            itemProd += aux.simbolo
+            counter++
+        }
+
+        if(counter == indexPoint)
+            itemProd+="."
+
+        log.debug itemProd        
+    }
 
     //def mapTerminalToken
     
