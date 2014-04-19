@@ -8,24 +8,44 @@ class ItemLR{
 
 	def itemsNoTerminales
 	def arregloBooleanTerminales
+	def terminales
 
-	def ItemLR(){
-		log.level = Level.DEBUG		
+	def ItemLR(def terminales){
+		this.terminales = terminales
+		log.level = Level.DEBUG
 	}
 
-	def elementos(def Gp){
-		arregloBooleanTerminales = [:]
+	def elementos(def Gp){		
 		this.itemsNoTerminales = Gp
-				
-		def I = []
-		I.add(((Gp.iterator().next().value)[0])?.get(0))			
-		
-		cerradura(I)
+		def simboloGramatical = []
+		simboloGramatical.addAll(itemsNoTerminales.keySet())
+		simboloGramatical.remove(Gp.iterator().next().key)
+		simboloGramatical.addAll(terminales)
+
+		log.debug "Simbolos gramaticales " + simboloGramatical
+
+		def I = [] 
+		def C = []
+		def ir_AListAux = []
+		I.add(((Gp.iterator().next().value)[0])?.get(0))
+		C.add(cerradura(I))
+
+		for(def i=0;i<C.size();i++){
+			simboloGramatical.each{
+				ir_AListAux = ir_A(C[i],it)
+				if(ir_AListAux)
+					log.debug ir_AListAux
+				else
+					log.debug "Is empty"
+			}			
+		}	
 
 	}
 
 	def cerradura(def I){
 		
+		arregloBooleanTerminales = [:]
+
 		itemsNoTerminales.each{ key,value ->
 			arregloBooleanTerminales[key] = false
 		}
@@ -43,8 +63,7 @@ class ItemLR{
 				}
 			}
 		}	
-		
-		log.error "--------> ${J}"
+				
 		J
 	}
 
@@ -58,4 +77,21 @@ class ItemLR{
 
 		listProducciones
 	}
+
+	def ir_A(def I,def X){
+						
+		def ir_Alist = []
+
+		I.each{ item ->
+			if(item.next.equals(X)){				
+				itemsNoTerminales.get(item.li).each{ listItem->					
+					if(listItem[item.pointPosition+1].prev.equals(item.next))					
+						ir_Alist.add(listItem[item.pointPosition+1])
+				}				
+			}
+		}
+
+		ir_Alist
+	}
+
 }

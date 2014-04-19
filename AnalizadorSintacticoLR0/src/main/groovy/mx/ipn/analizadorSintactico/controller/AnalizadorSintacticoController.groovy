@@ -59,7 +59,8 @@ class AnalizadorSintacticoController {
         def auxs = n.sig            
         def ladoIzq = n.simbolo+'→'        
         def listOfItems = []
-        getItemsFromProductions(auxs,ladoIzq,listOfItems)
+        getItemsFromProductions(auxs,ladoIzq,listOfItems)        
+
         listOfItems        
     }
 
@@ -69,19 +70,31 @@ class AnalizadorSintacticoController {
         def indexPoint = 0
         def dataItem = [:]
         dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]            
+        dataItem[indexPoint].prev = 'ε'
         dataItem[indexPoint].next = n.simbolo
-        def aux = n.sig                    
+        dataItem[indexPoint].pointPosition = indexPoint
+        dataItem[indexPoint].li = ladoIzq.split('→')[0]
+
+        def aux = n.sig
+        def prev = n
         
         while(aux){
-            indexPoint++
+            indexPoint++            
             dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]            
+            dataItem[indexPoint].prev = prev.simbolo
             dataItem[indexPoint].next = aux.simbolo
+            dataItem[indexPoint].pointPosition = indexPoint
+            dataItem[indexPoint].li = ladoIzq.split('→')[0]
+            prev=aux
             aux = aux.sig            
         }
 
         indexPoint++
         dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]
-        dataItem[indexPoint].next = 'ε'        
+        dataItem[indexPoint].prev = prev.simbolo
+        dataItem[indexPoint].next = 'ε'
+        dataItem[indexPoint].pointPosition = indexPoint
+        dataItem[indexPoint].li = ladoIzq.split('→')[0]
 
         list.add(dataItem)
 
@@ -115,14 +128,21 @@ class AnalizadorSintacticoController {
         itemProd
     }
 
-
-    def crearAutomataLR(def itemsNoTerminales){
-        def itemLR = new ItemLR()
-        /**/
+    def crearAutomataLR(def itemsNoTerminales,def terminales){
+        def itemLR = new ItemLR(terminales)        
         itemLR.elementos(itemsNoTerminales)
-
-                
     }
+
+    def obtenerTerminales(def mapOfLists){
+        def terminales = []
+
+        mapOfLists.each{
+            terminales.addAll(Lista.terminalesSub(it.value.sig))
+        }
+
+        terminales.unique()
+    }
+
     //def mapTerminalToken
     
     /*
@@ -165,15 +185,7 @@ class AnalizadorSintacticoController {
         mapOfFollow
     }
 
-    def obtenerTerminales(def mapOfLists){
-        def terminales = []
-
-        mapOfLists.each{
-            terminales.addAll(Lista.terminalesSub(it.value.sig))
-        }
-
-        terminales.unique()
-    }
+    
 
 
     def analizaCadena(def first,def follow,def terminales,def lexemasAndTokens){

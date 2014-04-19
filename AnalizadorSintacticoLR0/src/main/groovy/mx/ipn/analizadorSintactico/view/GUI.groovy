@@ -8,6 +8,7 @@ class GUI{
 	def analizadorSintacticoController
   def mapaDeListas
   def itemsNoTerminales
+  def terminales
   /*The constructor initialize the GUI of the application-
 	  El constructor inicializa la Interfaz de Usuario de la aplicacion*/
 	def GUI(){
@@ -30,7 +31,8 @@ class GUI{
                                     if(file){
                                         mapaDeListas = analizadorSintacticoController.crearLista(file)
                                         itemsNoTerminales = analizadorSintacticoController.crearItems(mapaDeListas)
-                                        analizadorSintacticoController.crearAutomataLR(itemsNoTerminales)
+                                        terminales = analizadorSintacticoController.obtenerTerminales(mapaDeListas)
+                                        analizadorSintacticoController.crearAutomataLR(itemsNoTerminales,terminales)
                                     }
                                 })
                         		}
