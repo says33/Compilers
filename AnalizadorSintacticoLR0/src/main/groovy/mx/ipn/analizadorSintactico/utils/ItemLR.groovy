@@ -94,4 +94,16 @@ class ItemLR{
 		ir_Alist
 	}
 
+
+	def containsItems(def C,def ir_A){
+		C.each{
+			log.debug it
+		}
+
+	}
+
+	def itemsIguales(){
+
+	}
+	
 }
