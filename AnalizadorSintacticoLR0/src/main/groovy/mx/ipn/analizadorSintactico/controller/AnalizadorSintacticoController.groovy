@@ -44,46 +44,56 @@ class AnalizadorSintacticoController {
 
 
     def crearItems(def mapaDeListas){
-        mapaDeListas.each{ key,value ->
-            log.debug 'Inicio de Calculo de Items'
-            getItemsFromNodo(value)
-            log.debug 'Fin de Calculo de Items'
+        def itemsNoTerminales = [:]
+
+        mapaDeListas.each{ key,value ->            
+            itemsNoTerminales[key] = getItemsFromNodo(value)            
+        }
+
+        itemsNoTerminales.each{
+            log.debug it
         }
     }
 
     def getItemsFromNodo(Nodo n){        
         def auxs = n.sig            
-        log.debug "${n.simbolo}→"
-
-        getItemsFromProductions(auxs)
+        def ladoIzq = n.simbolo+'→'        
+        def listOfItems = []
+        getItemsFromProductions(auxs,ladoIzq,listOfItems)
+        listOfItems        
     }
 
     
-    def getItemsFromProductions(Nodo n){
-
-        if(n.abajo)        
-            getItemsFromProductions(n.abajo)
+    def getItemsFromProductions(Nodo n,def ladoIzq,def list){
 
         def indexPoint = 0
-        getItem(n,indexPoint)
-        def aux = n.sig
-        
+        def dataItem = [:]
+        dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]            
+        dataItem[indexPoint].next = n.simbolo
+        def aux = n.sig                    
         
         while(aux){
             indexPoint++
-            getItem(n,indexPoint)
-            aux = aux.sig
+            dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]            
+            dataItem[indexPoint].next = aux.simbolo
+            aux = aux.sig            
         }
 
         indexPoint++
-        getItem(n,indexPoint)
+        dataItem[indexPoint] = [prod:ladoIzq+getItem(n,indexPoint)]
+        dataItem[indexPoint].next = 'ε'        
+
+        list.add(dataItem)
+
+        if(n.abajo)        
+            getItemsFromProductions(n.abajo,ladoIzq,list)            
 
     }
 
     def getItem(Nodo n,Integer indexPoint){
         def itemProd=""
         def aux = n
-        def counter = 1
+        def counter = 1        
 
         if(!indexPoint)
             itemProd+="."
@@ -101,8 +111,8 @@ class AnalizadorSintacticoController {
 
         if(counter == indexPoint)
             itemProd+="."
-
-        log.debug itemProd        
+                
+        itemProd
     }
 
     //def mapTerminalToken

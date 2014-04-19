@@ -25,8 +25,11 @@ class GUI{
                     		menuBar{
                         		menu(text: "Archivo"){
                             		menuItem("Abrir",onAction: {
-                                    mapaDeListas = analizadorSintacticoController.crearLista(fileChooser.showOpenDialog(primaryStage))
-                                    analizadorSintacticoController.crearItems(mapaDeListas)
+                                    def file = fileChooser.showOpenDialog(primaryStage)
+                                    if(file){
+                                        mapaDeListas = analizadorSintacticoController.crearLista(file)
+                                        analizadorSintacticoController.crearItems(mapaDeListas)
+                                    }
                                 })
                         		}
                     		}
