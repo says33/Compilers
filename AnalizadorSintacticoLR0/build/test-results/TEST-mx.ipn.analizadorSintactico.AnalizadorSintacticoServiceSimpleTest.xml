@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" tests="1" failures="0" errors="0" timestamp="2014-04-18T08:18:47" hostname="mbp-de-gamaliel.lan" time="0.089">
+<testsuite name="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" tests="1" failures="0" errors="0" timestamp="2014-04-19T09:34:39" hostname="MacBook-Pro-de-Gamaliel.local" time="0.076">
   <properties/>
-  <testcase name="anotherSample" classname="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" time="0.089"/>
+  <testcase name="anotherSample" classname="mx.ipn.analizadorSintactico.AnalizadorSintacticoServiceSimpleTest" time="0.076"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

@@ -5,6 +5,7 @@ import groovy.util.logging.*
 import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.Lista
 import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
+import mx.ipn.analizadorSintactico.utils.ItemLR
 //import mx.ipn.analizadorSintactico.utils.First
 //import mx.ipn.analizadorSintactico.utils.Follow
 /****************************
@@ -23,6 +24,7 @@ class AnalizadorSintacticoController {
     }    
 
 
+    //Crea la lista de listas a partir del archivo de gramáticas seleccionado
     def crearLista(def file){
        def sb = new StringBuilder()
        
@@ -50,9 +52,7 @@ class AnalizadorSintacticoController {
             itemsNoTerminales[key] = getItemsFromNodo(value)            
         }
 
-        itemsNoTerminales.each{
-            log.debug it
-        }
+        itemsNoTerminales
     }
 
     def getItemsFromNodo(Nodo n){        
@@ -115,6 +115,14 @@ class AnalizadorSintacticoController {
         itemProd
     }
 
+
+    def crearAutomataLR(def itemsNoTerminales){
+        def itemLR = new ItemLR()
+        /**/
+        itemLR.elementos(itemsNoTerminales)
+
+                
+    }
     //def mapTerminalToken
     
     /*
@@ -124,28 +132,7 @@ class AnalizadorSintacticoController {
     }*/
 
 /*
-    def crearListaGramaticas(){
-        def stringBuilder = new StringBuilder()
 
-        analizadorSintacticoService.linesFromFile().each{
-            stringBuilder.append(it)
-        }
-
-        def gramaticas = stringBuilder.toString()
-*/
-        /*Se crea el alfabeto verificando cada carácter del archivo*/
-  //      analizadorSintacticoService.crearAlfabeto(gramaticas)
-
-        /*Lista de listas*/
-    /*    def list = analizadorSintacticoService.createListFromProduction(gramaticas)
-
-        def mapOfLists = [:]
-
-        analizadorSintacticoService.createAMapOfLists(mapOfLists,list)
-
-        mapOfLists
-
-    }
 
     def calcularFirst(def mapOfLists){
 
