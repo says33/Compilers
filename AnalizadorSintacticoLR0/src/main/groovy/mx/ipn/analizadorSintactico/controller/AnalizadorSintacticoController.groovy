@@ -59,8 +59,7 @@ class AnalizadorSintacticoController {
         def auxs = n.sig            
         def ladoIzq = n.simbolo+'→'        
         def listOfItems = []
-        getItemsFromProductions(auxs,ladoIzq,listOfItems)        
-
+        getItemsFromProductions(auxs,ladoIzq,listOfItems)
         listOfItems        
     }
 

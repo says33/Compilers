@@ -2,6 +2,7 @@ package mx.ipn.analizadorSintactico.utils
 
 import org.apache.log4j.*
 import groovy.util.logging.*
+import mx.ipn.analizadorSintactico.domain.AutomataLR0
 
 @Log4j
 class ItemLR{
@@ -69,6 +70,7 @@ class ItemLR{
 	}
 
 	def elementos(def Gp){		
+		
 		this.itemsNoTerminales = Gp
 		def simboloGramatical = []
 		simboloGramatical.addAll(itemsNoTerminales.keySet())
@@ -76,33 +78,50 @@ class ItemLR{
 		simboloGramatical.addAll(terminales)
 
 		log.debug "Simbolos gramaticales " + simboloGramatical
+		
+		//Automata que contendrá los estados
+		def automataLR0 = new AutomataLR0()
 
 		def I = [] 
 		def C = []
 		def ir_AListAux = []
 		I.add(((Gp.iterator().next().value)[0])?.get(0))
 		C.add(cerradura(I))
+		automataLR0.addEdoToAutomata(C[0])
+		
+		def auxTransicion = [:]
 
 		for(def i=0;i<C.size();i++){
-			simboloGramatical.each{
-				ir_AListAux = ir_A(C[i],it)
-				if(ir_AListAux && !containsItems(C,ir_AListAux))					
-					C.add(ir_AListAux)				
-			}			
+			simboloGramatical.each{ X ->
+				ir_AListAux = ir_A(C[i],X)	
+				if(ir_AListAux){
+					def edoTransicion = containsItems(C,ir_AListAux)
+					if(edoTransicion == -1){						
+						C.add(ir_AListAux)
+						automataLR0.addEdoToAutomata(ir_AListAux)
+						auxTransicion[X] = automataLR0.estados[automataLR0.estados.size()-1]
+					}
+					else{
+						auxTransicion[X] = automataLR0.estados[edoTransicion]
+					}
+				}
+					
+			}
+			automataLR0.estados[i].transiciones = auxTransicion
+			auxTransicion = [:]			
 		}
 
-		C.each{
-			log.debug "-------ColeccionCanonica ${it}"
-		}	
-
+		automataLR0.printAutomata()
+		
 	}
 
 	def containsItems(def C,def ir_A){
 		for(def i=0;i<C.size();i++)
-			if(itemsIguales(C.get(i),ir_A))
-				return true
-
-		return false		
+			if(itemsIguales(C.get(i),ir_A)){				
+				return i
+			}
+		
+		return -1	
 	}
 
 	def itemsIguales(def I,def ir_A){
