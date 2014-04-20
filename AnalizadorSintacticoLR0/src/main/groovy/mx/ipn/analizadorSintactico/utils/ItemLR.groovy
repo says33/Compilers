@@ -13,34 +13,7 @@ class ItemLR{
 	def ItemLR(def terminales){
 		this.terminales = terminales
 		log.level = Level.DEBUG
-	}
-
-	def elementos(def Gp){		
-		this.itemsNoTerminales = Gp
-		def simboloGramatical = []
-		simboloGramatical.addAll(itemsNoTerminales.keySet())
-		simboloGramatical.remove(Gp.iterator().next().key)
-		simboloGramatical.addAll(terminales)
-
-		log.debug "Simbolos gramaticales " + simboloGramatical
-
-		def I = [] 
-		def C = []
-		def ir_AListAux = []
-		I.add(((Gp.iterator().next().value)[0])?.get(0))
-		C.add(cerradura(I))
-
-		for(def i=0;i<C.size();i++){
-			simboloGramatical.each{
-				ir_AListAux = ir_A(C[i],it)
-				if(ir_AListAux)
-					log.debug ir_AListAux
-				else
-					log.debug "Is empty"
-			}			
-		}	
-
-	}
+	}	
 
 	def cerradura(def I){
 		
@@ -85,25 +58,62 @@ class ItemLR{
 		I.each{ item ->
 			if(item.next.equals(X)){				
 				itemsNoTerminales.get(item.li).each{ listItem->					
-					if(listItem[item.pointPosition+1].prev.equals(item.next))					
-						ir_Alist.add(listItem[item.pointPosition+1])
+					if(listItem[item.pointPosition+1])
+						if(listItem[item.pointPosition+1].prev.equals(item.next))					
+							ir_Alist.add(listItem[item.pointPosition+1])							
 				}				
 			}
 		}
 
-		ir_Alist
+		cerradura(ir_Alist)		
 	}
 
+	def elementos(def Gp){		
+		this.itemsNoTerminales = Gp
+		def simboloGramatical = []
+		simboloGramatical.addAll(itemsNoTerminales.keySet())
+		simboloGramatical.remove(Gp.iterator().next().key)
+		simboloGramatical.addAll(terminales)
 
-	def containsItems(def C,def ir_A){
-		C.each{
-			log.debug it
+		log.debug "Simbolos gramaticales " + simboloGramatical
+
+		def I = [] 
+		def C = []
+		def ir_AListAux = []
+		I.add(((Gp.iterator().next().value)[0])?.get(0))
+		C.add(cerradura(I))
+
+		for(def i=0;i<C.size();i++){
+			simboloGramatical.each{
+				ir_AListAux = ir_A(C[i],it)
+				if(ir_AListAux && !containsItems(C,ir_AListAux))					
+					C.add(ir_AListAux)				
+			}			
 		}
 
+		C.each{
+			log.debug "-------ColeccionCanonica ${it}"
+		}	
+
 	}
 
-	def itemsIguales(){
+	def containsItems(def C,def ir_A){
+		for(def i=0;i<C.size();i++)
+			if(itemsIguales(C.get(i),ir_A))
+				return true
 
+		return false		
 	}
-	
+
+	def itemsIguales(def I,def ir_A){
+		def min = I.size() < ir_A.size() ? I.size() : ir_A.size()
+		
+		for(def i=0;i<min;i++){			
+			if(!ir_A[i].prod.equals(I[i].prod))
+				return false
+		}
+		
+		return true
+	}
+
 }
