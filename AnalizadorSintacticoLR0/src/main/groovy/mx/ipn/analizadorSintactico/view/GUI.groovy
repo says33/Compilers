@@ -5,16 +5,22 @@ import javafx.scene.control.Label
 import groovyx.javafx.beans.FXBindable
 import javafx.collections.ObservableList;
 import mx.ipn.analizadorSintactico.controller.AnalizadorSintacticoController
+import mx.ipn.analizadorSintactico.controller.AnalizadorLexicoController
 import mx.ipn.analizadorSintactico.utils.Movimiento
+import mx.ipn.analizadorSintactico.utils.ScannerLexico
+import mx.ipn.analizadorSintactico.domain.AFD
+
 
 class GUI{
 
 	def analizadorSintacticoController
+  def analizadorLexicoController
   def mapaDeListas
   def itemsNoTerminales
   def terminales = []
   def tablaLR0 = []
   def movimientos = []
+  def scanner
   /*The constructor initialize the GUI of the application-
 	  El constructor inicializa la Interfaz de Usuario de la aplicacion*/
 	class Info{
@@ -23,8 +29,10 @@ class GUI{
 
   def GUI(){
 		
-    analizadorSintacticoController = new AnalizadorSintacticoController();
-    
+    analizadorSintacticoController = new AnalizadorSintacticoController()
+    analizadorLexicoController = new AnalizadorLexicoController()
+    scanner = new ScannerLexico()
+    analizadorLexicoController.readTable(scanner)
 
 		start{
       def info = new Info()
@@ -44,9 +52,14 @@ class GUI{
                         		menu(text: "Archivo"){
                             		menuItem("Abrir",onAction: {
                                     def file = fileChooser.showOpenDialog(primaryStage)
-                                    if(file){
+                                    if(file){                                        
+                                        
                                         mapaDeListas = analizadorSintacticoController.crearLista(file)
                                         itemsNoTerminales = analizadorSintacticoController.crearItems(mapaDeListas)
+
+                                        itemsNoTerminales.each{
+                                            println "Items " + it
+                                        }
                                         terminales = analizadorSintacticoController.obtenerTerminales(mapaDeListas)
                                         tablaLR0 = analizadorSintacticoController.crearTablaLR0(itemsNoTerminales,terminales,mapaDeListas)                                        
                                         def terminalesFieldArray = []
@@ -60,9 +73,22 @@ class GUI{
                                             }
 
                                             button(text:"Generar Analizador Léxico",onAction:{
-                                              terminalesFieldArray.each{
-                                                println it.text
-                                              }
+                                                def mapTerminalTokens = [:]
+                                                def terminalesWithoutEpsilon =[]
+                                                terminalesWithoutEpsilon += terminales
+                                                terminalesWithoutEpsilon.remove('ε')
+
+                                                tokensFieldArray.size().times{ i->
+                                                    mapTerminalTokens[tokensFieldArray[i].text]=terminalesWithoutEpsilon[i]
+                                                }  
+                                                mapTerminalTokens['0'] = '$'                                            
+                                                
+                                                analizadorLexicoController.createTable(terminalesFieldArray,tokensFieldArray)
+                                                //Los tokens y su valor se inyectan al controlador del analizador sintáctico
+                                                analizadorSintacticoController.setMapTerminalTokens(mapTerminalTokens)
+                                                
+                                                analizadorLexicoController.readTable(scanner)
+                                                
                                             },style:"-fx-font: 16 arial; -fx-base: #2e64fe;",row:5,column:0,columnSpan:20)
 
                                         })                                                                                
@@ -81,10 +107,12 @@ class GUI{
                             borderPane(id:'bpaneSintactico'){
                                 top(){
                                   gridPane(hgap: 5, vgap: 0, padding: 20, alignment: "center",id:'gPane'){
+                                    scanner.cleanScanner()
                                     cadena = textField(promptText:"Teclee la cadena",row:1,column:1,columnSpan:100,halignment:"right")
                                     button(text:"Analizar cadena",onAction:{
-                                                                            if(tablaLR0)
-                                                                                movimientos = analizadorSintacticoController.analizaCadena(tablaLR0,cadena.text,terminales)
+                                                                            if(tablaLR0){                                                                                
+                                                                                scanner.cleanScanner()
+                                                                                movimientos = analizadorSintacticoController.analizaCadena(tablaLR0,cadena.text,terminales,scanner.tokenizaCadena(cadena.text))
                                                                                 //tablaMovimientos.setItems(info.listaPrueba)
                                                                                 bpaneSintactico.setCenter(
                                                                                     stackPane(padding: [20,50,90,50]) {  
@@ -96,7 +124,7 @@ class GUI{
                                                                                       }
                                                                                     }
                                                                                 )
-                                                                                
+                                                                              }
                                                                            }
                                                                            ,row:1,column:101,style:"-fx-font: 16 arial; -fx-base: #2e64fe;") 
 

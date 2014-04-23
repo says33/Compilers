@@ -15,6 +15,7 @@ import mx.ipn.analizadorSintactico.utils.Movimiento
 @Log4j
 class AnalizadorSintacticoController {
     
+    def mapTerminalTokens
     def analizadorSintacticoService
 
     def AnalizadorSintacticoController(){       
@@ -22,6 +23,13 @@ class AnalizadorSintacticoController {
        analizadorSintacticoService = new AnalizadorSintacticoService()
     }    
 
+    def setMapTerminalTokens(def mapTerminalTokens){
+        this.mapTerminalTokens = mapTerminalTokens
+    }
+
+    def getMapTerminalTokens(){
+        return mapTerminalTokens
+    }
 
     //Crea la lista de listas a partir del archivo de gramáticas seleccionado
     def crearLista(def file){
@@ -144,9 +152,28 @@ class AnalizadorSintacticoController {
     }
 
 
-    def analizaCadena(def tablaLR0,def cadena,def terminales){
+    def analizaCadena(def tablaLR0,def cadena,def terminales,def lexemasAndTokens){
         
+        def cadenaReal = []
+        def tokensEntrada=[]
+        def subcadena = ""
+
+        lexemasAndTokens.each{
+            cadenaReal += it[0]
+            tokensEntrada += it[1]
+        }
+
+        subcadena = concat(cadenaReal)
+
         tablaLR0.each{
+            log.debug it
+        }
+
+        tokensEntrada.each{
+            log.debug it
+        }
+
+        mapTerminalTokens.each{
             log.debug it
         }
 
@@ -157,8 +184,8 @@ class AnalizadorSintacticoController {
         Stack<Integer> pila = new Stack<Integer>()
         Stack<String> pilaSimbolos = new Stack<String>()
         def index = 0
-        def w = getW(cadena,terminales) + '$'
-        def a = w[index]
+        //def w = getW(cadena,terminales) + '$'
+        def a = tokensEntrada[index]
         
         tablaLR0.size().times{ i ->
             edos << i
@@ -170,7 +197,7 @@ class AnalizadorSintacticoController {
         def noAceptado = false
 
         while(1){
-            if(tablaLR0[pila.peek()][a] instanceof Integer){
+            if(tablaLR0[pila.peek()][mapTerminalTokens[a]] instanceof Integer){
                 pila.elements().each{
                     auxStringPila+= "${it} "
                 }
@@ -179,28 +206,31 @@ class AnalizadorSintacticoController {
                     auxStringSimbolo+= "${it} "
                 }
                 
-                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"desplazar"))
+                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"desplazar"))
                 auxStringPila = ""
                 auxStringSimbolo = ""
 
-                pila.push(tablaLR0[pila.peek()][a])
+                pila.push(tablaLR0[pila.peek()][mapTerminalTokens[a]])
 
-                pilaSimbolos.push(a)
+                pilaSimbolos.push(mapTerminalTokens[a])
                 
-                /*
-                log.debug "Items desp --"  
-                    pila.elements().each{
-                        log.debug it
-                    }
-                log.debug "-------------"
-                */
-                a = w[++index]
+                
+                //log.debug "Items desp --"  
+                  //  pila.elements().each{
+                    //    log.debug it
+                    //}
+                //log.debug "-------------"
+                
+                a = tokensEntrada[++index]
+                subcadena = subcadena.substring(cadenaReal.get(index-1).length(),subcadena.length())
+
+                log.debug "A " + a  
             }
-            else if(tablaLR0[pila.peek()][a].getClass() == LinkedHashMap){
+            else if(tablaLR0[pila.peek()][mapTerminalTokens[a]].getClass() == LinkedHashMap){
                 
-                def noTerminal = tablaLR0[pila.peek()][a].li
+                def noTerminal = tablaLR0[pila.peek()][mapTerminalTokens[a]].li
                 def ladoDerecho = ""
-                tablaLR0[pila.peek()][a].ld.each{
+                tablaLR0[pila.peek()][mapTerminalTokens[a]].ld.each{
                     ladoDerecho += it
                 }
                 
@@ -212,12 +242,12 @@ class AnalizadorSintacticoController {
                     auxStringSimbolo+= "${it} "
                 }
 
-                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"reducir ${noTerminal}→${ladoDerecho}")) 
+                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"reducir ${noTerminal}→${ladoDerecho}")) 
                 auxStringPila = ""
                 auxStringSimbolo = ""
 
 
-                (tablaLR0[pila.peek()][a].ld).each{
+                (tablaLR0[pila.peek()][mapTerminalTokens[a]].ld).each{
                     pila.pop()
                     pilaSimbolos.pop()
                 }
@@ -226,6 +256,7 @@ class AnalizadorSintacticoController {
                 pilaSimbolos.push(noTerminal)
                 pila.push(tablaLR0[pila.peek()][noTerminal])
 
+                /*
                 log.debug "Items reduccion " 
                     pila.elements().each{
                         log.debug it
@@ -234,9 +265,9 @@ class AnalizadorSintacticoController {
                     pilaSimbolos.elements().each{
                         log.debug it
                     }
-                log.debug "----------------"
+                log.debug "----------------"*/
             }
-            else if(tablaLR0[pila.peek()][a] == 'ACEPTAR'){
+            else if(tablaLR0[pila.peek()][mapTerminalTokens[a]] == 'ACEPTAR'){
                 pila.elements().each{
                     auxStringPila += "${it} "
                 }
@@ -248,7 +279,7 @@ class AnalizadorSintacticoController {
                 movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"ACEPTAR"))
                 break
             }
-            else{
+            else{                                        
                 noAceptado = true
                 break                
             }

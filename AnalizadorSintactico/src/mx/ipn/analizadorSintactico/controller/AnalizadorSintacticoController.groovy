@@ -50,7 +50,7 @@ class AnalizadorSintacticoController {
             first.getFirstOfNodo(it.value)
         }
 
-        z
+        first
     }
 
     def calcularFollow(def first,mapOfLists){

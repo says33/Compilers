@@ -8,7 +8,7 @@ import mx.ipn.analizadorSintactico.utils.AFDFile;
 import mx.ipn.analizadorSintactico.utils.AFNaAFD;
 import mx.ipn.analizadorSintactico.utils.ScannerLexico;
 
-import javax.swing.*;
+import javafx.scene.control.TextField;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -31,7 +31,8 @@ public class AnalizadorLexicoController {
 
     public void readTable(ScannerLexico scanner){
         try{
-            File afnTableFile = new File("C:\\Users\\Gamaliel\\Documents\\ESCOM\\AFNTabla.bin");
+            String path = "//Users//gamaliel//Desktop//FNTabla.bin";
+            File afnTableFile = new File(path);
             FileInputStream fis = new FileInputStream(afnTableFile);
             ObjectInputStream input = new ObjectInputStream(fis);
 
@@ -48,7 +49,7 @@ public class AnalizadorLexicoController {
         }
     }
 
-    public void createTable(ArrayList<JTextField> arrayOfRegex,ArrayList<JTextField> arrayOfToken){
+    public void createTable(ArrayList<TextField> arrayOfRegex,ArrayList<TextField> arrayOfToken){
         AFDFile afdFile = new AFDFile();
 
         AnalizadorLexicoService als = new AnalizadorLexicoService();
