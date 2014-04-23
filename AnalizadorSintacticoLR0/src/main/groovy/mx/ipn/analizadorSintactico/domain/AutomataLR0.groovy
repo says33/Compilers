@@ -34,7 +34,7 @@ class AutomataLR0{
 			edo.transiciones.each{ key,value ->
 				log.debug "${key} "
 				value.estadoItems.each{ item ->
-					log.debug "Prod ${item.prod}"
+					log.debug "\t ${item.prod}"
 				}				
 			}
 

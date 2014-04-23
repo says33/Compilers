@@ -3,15 +3,13 @@ package mx.ipn.analizadorSintactico.domain
 import org.apache.log4j.*
 import groovy.util.logging.*
 
-/********************************
- * Created with IntelliJ IDEA.  *
- * User: Gamaliel               *
- * Date: 19-03-14               *
- * Time: 12:25 PM               *
- ********************************/
+/******************************
+ * Author: Gamaliel Jiménez   *
+ * Date: 19-03-14             *
+ ******************************/
 @Log4j
 class TokenScanner {
-    
+        
     def static final PUNTOCOMA = 500
     def static final FLECHA = 600
     def static final OR = 700
@@ -26,7 +24,7 @@ class TokenScanner {
 
     def static addAlphabetToMap(){
         alfabeto.each {
-            log.debug it
+            //log.debug it
             tokensMap.put(it,TokenScanner.SIMB)
         }
     }

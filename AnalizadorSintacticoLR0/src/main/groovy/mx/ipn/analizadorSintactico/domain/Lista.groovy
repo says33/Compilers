@@ -78,10 +78,6 @@ class Lista {
 
         def list = []
 
-        if(nodo.abajo){
-            list.addAll(terminalesSub(nodo.abajo))
-        }
-
         def aux = nodo
 
         if(aux.esTerminal)
@@ -91,6 +87,10 @@ class Lista {
             aux = aux.sig
             if(aux.esTerminal)
                 list.add(aux.simbolo)
+        }
+
+        if(nodo.abajo){
+            list.addAll(terminalesSub(nodo.abajo))
         }
 
         list

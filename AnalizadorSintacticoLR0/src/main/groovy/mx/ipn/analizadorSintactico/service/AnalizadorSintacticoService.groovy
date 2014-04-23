@@ -7,6 +7,8 @@ import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.TokenScanner
 import mx.ipn.analizadorSintactico.utils.ScannerSintactico
 import mx.ipn.analizadorSintactico.utils.DescensoRecursivo
+import mx.ipn.analizadorSintactico.utils.First
+import mx.ipn.analizadorSintactico.utils.Follow
 
 /**
     Author: Gamaliel Jiménez
@@ -17,7 +19,7 @@ import mx.ipn.analizadorSintactico.utils.DescensoRecursivo
 class AnalizadorSintacticoService {
 
     def AnalizadorSintacticoService(){       
-           
+        log.level = Level.DEBUG      
     }    
 
     def getProductionsFromFile(def file){
@@ -75,82 +77,120 @@ class AnalizadorSintacticoService {
         }
     }
 
+    def crearTablaLR0(def automataLR0,def terminales,def mapOfLists){        
+        def tablaAccion = []
+        def mapOfGramaticaNoAumentada = [:]
 
-/*
-    def createAMapOfLists(def map,def list){
-        def aux = list.head
+        mapOfGramaticaNoAumentada << (mapOfLists.findAll{it.key != mapOfLists.iterator().next().key})
+        //Mapa que contiene el follow de cada elemento
+        def terminalesAndNoTerminales =[]
+        terminalesAndNoTerminales += terminales + '$' + mapOfGramaticaNoAumentada.keySet()
 
-        map.put(aux.simbolo,aux)
-
-        while (aux.abajo){
-            aux = aux.abajo
-            map.put(aux.simbolo,aux)
-        }
-    }
-
-    def getNoTerminalesConDerivacionEpsilon(def map){
-
-        def list = []
-
-        map.each{
-            if(tieneDerivacionesEpsilon(it.value.sig))
-                list.add(it.value.simbolo)
+        terminalesAndNoTerminales.each{
+            log.debug it
         }
 
-        list
-    }
-
-    def tieneDerivacionesEpsilon(Nodo n){
-
-        if(n.abajo)
-            if(tieneDerivacionesEpsilon(n.abajo))
-                return true
-
-        if(n.simbolo.equals("ε"))
-            return true
-
-        def aux = n.sig
-
-        while(aux){
-            if(aux.simbolo.equals("ε"))
-                return true
-
-            aux = aux.sig
-        }
-
-        false
-    }
+        def follow = calcularFollow(null,mapOfGramaticaNoAumentada)
 
 
-    def getItemsOfProd(String prod){
-        def lista = []
-
-        if(isLowerCase(prod.charAt(0))){
-            lista.add(prod)
-            return lista
-        }
-
-        for(int i=0;i<prod.size();i++){
-            if(i < prod.size()-1){
-                if(prod.charAt(i+1) == '\''){
-                    lista.add(prod.substring(i,i+2))
-                    i += 1
-                }
-                else
-                    lista.add(new Character(prod.charAt(i)).toString())
+        automataLR0.estados.each{ edo ->
+            def row = [:] 
+            terminalesAndNoTerminales.each{ terminal ->
+                row[terminal]='' 
             }
-            else if(prod.charAt(i) != '\'')
-                lista.add(new Character(prod.charAt(i)).toString())
+            tablaAccion << row
         }
 
-        lista
+        automataLR0.estados.each{ edo ->            
+            def accionAndIr_AItems = accionAndIr_AElementos(edo.estadoItems,terminalesAndNoTerminales)
+            def reducciones = reduccionElementos(edo.estadoItems,terminalesAndNoTerminales)
+            
+            if(aceptacion(mapOfLists.iterator().next().key,edo.estadoItems)){
+                tablaAccion[edo.id]['$'] = 'ACEPTAR'
+            }
+
+            reducciones.each{ r -> 
+                if(follow[r.li]){                    
+                    follow[r.li].each{ term -> tablaAccion[edo.id][term] = r }
+                }
+            }
+
+            accionAndIr_AItems.each{ term ->
+                if(edo.transiciones[term])
+                    tablaAccion[edo.id][term]= edo.transiciones[term].id
+            }
+
+        }
+
+        tablaAccion
     }
 
-    def isLowerCase(def c){
-        if(c>='a' && c <='z')
-            return true
+    //Define la acción para el estado en la tabla
+    def accionAndIr_AElementos(def itemsEstado,def terminalesAndNoTerminales){
+        def elementosAccion = []
 
+        terminalesAndNoTerminales.each{ terminal ->
+            itemsEstado.findAll { it.next == terminal}.each{
+                elementosAccion << it.next
+            }
+        }
+
+        elementosAccion
+    }
+
+    def reduccionElementos(def itemsEstado,def terminalesAndNoTerminales){
+        def reduccion = []
+
+        itemsEstado.findAll{it.next == 'ε'}.each{
+            def ladoDerecho = it.prod.split('→')[1]
+            ladoDerecho = ladoDerecho[0..(ladoDerecho.length()-2)]
+            
+            def reduccionMap = [li:it.li,ld:getLista(ladoDerecho,terminalesAndNoTerminales)]
+            reduccion << reduccionMap
+        }
+
+        reduccion
+    }
+
+    def aceptacion(def simboloAumentado,def itemsEstado){
+        if(itemsEstado.findAll{(it.li == simboloAumentado && it.next == 'ε')})
+            return true
+        return false
+    }
+
+    def calcularFollow(def first,mapOfLists){
+
+        def mapOfFollow = [:]
+        def noTerminales = mapOfLists.keySet()
+
+        def follow = new Follow(mapOfLists,null)        
+
+        noTerminales.each{ noTerminal ->
+            def auxmap = [:]
+            mapOfFollow[noTerminal] = follow.getFollowOfNodo(mapOfLists[noTerminal])
+        }
+
+        mapOfFollow
+    }
+
+    def getLista(def ladoDerecho,def terminalesAndNoTerminales){
+        def listaSimbolos = []
+        def substring = ""
+        ladoDerecho.length().times{ i->
+            substring += ladoDerecho[i]
+            if(esSimbolo(substring,terminalesAndNoTerminales)){
+                listaSimbolos << substring
+                substring = ""  
+            }
+        }
+
+        listaSimbolos
+    }
+
+    def esSimbolo(def cadena,def terminalesAndNoTerminales){
+        if(terminalesAndNoTerminales.contains(cadena))
+            return true
         false
     }
-    */
+    
 }

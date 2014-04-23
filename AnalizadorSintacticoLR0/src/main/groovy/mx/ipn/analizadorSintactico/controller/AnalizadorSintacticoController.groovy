@@ -6,8 +6,7 @@ import mx.ipn.analizadorSintactico.domain.Nodo
 import mx.ipn.analizadorSintactico.domain.Lista
 import mx.ipn.analizadorSintactico.service.AnalizadorSintacticoService
 import mx.ipn.analizadorSintactico.utils.ItemLR
-//import mx.ipn.analizadorSintactico.utils.First
-//import mx.ipn.analizadorSintactico.utils.Follow
+import mx.ipn.analizadorSintactico.utils.Movimiento
 /****************************
  * Author: Gamaliel Jiménez *
  * Date: 15-Abril-2014      *
@@ -127,9 +126,11 @@ class AnalizadorSintacticoController {
         itemProd
     }
 
-    def crearAutomataLR(def itemsNoTerminales,def terminales){
+    def crearTablaLR0(def itemsNoTerminales,def terminales,def mapOfLists){
         def itemLR = new ItemLR(terminales)        
-        itemLR.elementos(itemsNoTerminales)
+        //Creación del automata LR0 para construir la tabla
+        def automataLR0 = itemLR.elementos(itemsNoTerminales)
+        analizadorSintacticoService.crearTablaLR0(automataLR0,terminales,mapOfLists)
     }
 
     def obtenerTerminales(def mapOfLists){
@@ -142,157 +143,137 @@ class AnalizadorSintacticoController {
         terminales.unique()
     }
 
-    //def mapTerminalToken
-    
-    /*
-    def AnalizadorSintacticoController(def mapTerminalToken){
-        analizadorSintacticoService = new AnalizadorSintacticoService()
-        this.mapTerminalToken = mapTerminalToken
-    }*/
 
-/*
-
-
-    def calcularFirst(def mapOfLists){
-
-        def first = new First(mapOfLists)
-*/
-        /*Calculo de todos los first*/
-  /*      mapOfLists.each{
-            first.getFirstOfNodo(it.value)
+    def analizaCadena(def tablaLR0,def cadena,def terminales){
+        
+        tablaLR0.each{
+            log.debug it
         }
 
-        first
-    }
-
-    def calcularFollow(def first,mapOfLists){
-
-        def mapOfFollow = [:]
-        def noTerminales = analizadorSintacticoService.getNoTerminalesConDerivacionEpsilon(mapOfLists)
-        def follow = new Follow(mapOfLists,first.mapOfFirst)
-
-        noTerminales.each{ noTerminal ->
-            def auxmap = [:]
-
-            follow.getFollowOfNodo(mapOfLists.get(noTerminal)).each{
-                auxmap.put(it,"ε")
-            }
-
-            mapOfFollow.(noTerminal.toString()) = auxmap
+        def movimientos = []
+        def auxStringPila = ""
+        def auxStringSimbolo = ""
+        def edos = []
+        Stack<Integer> pila = new Stack<Integer>()
+        Stack<String> pilaSimbolos = new Stack<String>()
+        def index = 0
+        def w = getW(cadena,terminales) + '$'
+        def a = w[index]
+        
+        tablaLR0.size().times{ i ->
+            edos << i
         }
 
-        mapOfFollow
-    }
+        pila.push(edos[0])
+        
+        
+        def noAceptado = false
 
-    
-
-
-    def analizaCadena(def first,def follow,def terminales,def lexemasAndTokens){
-
-        def datos = []
-        def listData = []
-        def auxString = ""
-
-        def inputArray = []
-        def cadena = []
-        def subcadena = ""
-
-        lexemasAndTokens.each{
-            cadena.add(it.get(0))
-            inputArray.add(it.get(1))
-        }
-
-
-        subcadena = concat(cadena)
-
-        Stack<String> pila = new Stack<String>()
-        pila.push('$')
-        pila.push(first.iterator().next().key)
-
-        listData.add('$')
-        listData.add("")
-        listData.add("push (${first.iterator().next().key})")
-
-        datos.add(listData)
-
-        def pointer = 0
-        def a = inputArray.get(pointer)
-        def X = pila.peek()
-
-        while(!X.equals('$')){
-            listData = []
-            auxString = ""
-
-            if(X.equals(mapTerminalToken.get(a))){
+        while(1){
+            if(tablaLR0[pila.peek()][a] instanceof Integer){
                 pila.elements().each{
-                    auxString+=it
+                    auxStringPila+= "${it} "
                 }
-                listData.add(auxString)
-                listData.add(subcadena)
-                listData.add("pop (${pila.peek()})")
+                
+                pilaSimbolos.elements().each{
+                    auxStringSimbolo+= "${it} "
+                }
+                
+                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"desplazar"))
+                auxStringPila = ""
+                auxStringSimbolo = ""
 
-                pila.pop()
-                //cadena = cadena.substring(a.length(),cadena.length())
-                pointer++;
-                a = inputArray.get(pointer)
+                pila.push(tablaLR0[pila.peek()][a])
 
-                subcadena = subcadena.substring(cadena.get(pointer-1).length(),subcadena.length())
-
+                pilaSimbolos.push(a)
+                
+                /*
+                log.debug "Items desp --"  
+                    pila.elements().each{
+                        log.debug it
+                    }
+                log.debug "-------------"
+                */
+                a = w[++index]
             }
-            else if(first.get(X)?.get(mapTerminalToken.get(a))){
-                def items = analizadorSintacticoService.getItemsOfProd(first.get(X)?.get(mapTerminalToken.get(a)))
-
+            else if(tablaLR0[pila.peek()][a].getClass() == LinkedHashMap){
+                
+                def noTerminal = tablaLR0[pila.peek()][a].li
+                def ladoDerecho = ""
+                tablaLR0[pila.peek()][a].ld.each{
+                    ladoDerecho += it
+                }
+                
                 pila.elements().each{
-                    auxString+=it
+                    auxStringPila += "${it} "
                 }
-                listData.add(auxString)
-                listData.add(subcadena)
-                auxString = ""
-
-                items.each{
-                    auxString+=it
+                
+                pilaSimbolos.elements().each{
+                    auxStringSimbolo+= "${it} "
                 }
 
-                listData.add(auxString)
+                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"reducir ${noTerminal}→${ladoDerecho}")) 
+                auxStringPila = ""
+                auxStringSimbolo = ""
 
-                items = items.reverse()
 
-                pila.pop()
-
-                items.each{
-                    pila.push(it)
+                (tablaLR0[pila.peek()][a].ld).each{
+                    pila.pop()
+                    pilaSimbolos.pop()
                 }
+                
+
+                pilaSimbolos.push(noTerminal)
+                pila.push(tablaLR0[pila.peek()][noTerminal])
+
+                log.debug "Items reduccion " 
+                    pila.elements().each{
+                        log.debug it
+                    }
+                log.debug "Simbolos "
+                    pilaSimbolos.elements().each{
+                        log.debug it
+                    }
+                log.debug "----------------"
             }
-            else if(follow.get(X)?.get(mapTerminalToken.get(a))){
+            else if(tablaLR0[pila.peek()][a] == 'ACEPTAR'){
                 pila.elements().each{
-                    auxString+=it
+                    auxStringPila += "${it} "
+                }
+                
+                pilaSimbolos.elements().each{
+                    auxStringSimbolo+= "${it} "
                 }
 
-                listData.add(auxString)
-                listData.add(subcadena)
-                listData.add(follow.get(X)?.get(mapTerminalToken.get(a)))
-
-                pila.pop()
+                movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"ACEPTAR"))
+                break
             }
             else{
-                return datos
+                noAceptado = true
+                break                
             }
-
-            datos.add(listData)
-
-            X = pila.peek()
+            
         }
 
+        if(noAceptado)
+            log.debug "La cadena no fue aceptada"
 
-        listData = []
-        listData.add('$')
-        listData.add("")
-        listData.add("ACCEPTED")
-
-        datos.add(listData)
-        datos
+        movimientos
     }
+    
+    def getW(def cadena,def terminales){
+        def wList = []
+        def subcadena = ""
+        for(def i=0;i<cadena.length();i++){
+            subcadena += Character.toString(cadena.charAt(i))
+            if(isTerminal(subcadena,terminales)){
+                wList << subcadena
+                subcadena = ""
+            }
+        }
 
+        wList
+    }
 
     def isTerminal(String cadena,def terminales){
         if(terminales.contains(cadena))
@@ -309,5 +290,5 @@ class AnalizadorSintacticoController {
 
         cadena.toString()
     }
-*/
+
 }

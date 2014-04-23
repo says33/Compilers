@@ -113,6 +113,7 @@ class ItemLR{
 
 		automataLR0.printAutomata()
 		
+		automataLR0
 	}
 
 	def containsItems(def C,def ir_A){
