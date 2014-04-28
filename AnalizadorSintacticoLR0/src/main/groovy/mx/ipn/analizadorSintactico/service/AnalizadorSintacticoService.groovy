@@ -106,16 +106,18 @@ class AnalizadorSintacticoService {
             if(aceptacion(mapOfLists.iterator().next().key,edo.estadoItems)){
                 tablaAccion[edo.id]['$'] = 'ACEPTAR'
             }
-
+                            
             reducciones.each{ r -> 
                 if(follow[r.li]){
-                    follow[r.li].each{ term -> 
-                        //log.debug r.ld
-                        tablaAccion[edo.id][term] = r
+                    follow[r.li].each{ term ->
+                        if(tablaAccion[edo.id][term])
+                            tablaAccion[edo.id][term] << r
+                        else
+                            tablaAccion[edo.id][term] = [r]
                     }
                 }
-            }
-
+            }    
+            
             accionAndIr_AItems.each{ term ->
                 if(edo.transiciones[term])
                     tablaAccion[edo.id][term]= edo.transiciones[term].id

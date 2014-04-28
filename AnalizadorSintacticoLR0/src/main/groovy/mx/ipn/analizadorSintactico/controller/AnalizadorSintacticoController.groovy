@@ -223,11 +223,26 @@ class AnalizadorSintacticoController {
                 a = tokensEntrada[++index]
                 subcadena = subcadena.substring(cadenaReal.get(index-1).length(),subcadena.length())
             }
-            else if(tablaLR0[pila.peek()][mapTerminalTokens[a]].getClass() == LinkedHashMap){
+            else if(tablaLR0[pila.peek()][mapTerminalTokens[a]].getClass() == ArrayList){
                 
-                def noTerminal = tablaLR0[pila.peek()][mapTerminalTokens[a]].li
                 def ladoDerecho = ""
-                tablaLR0[pila.peek()][mapTerminalTokens[a]].ld.each{
+                def noTerminal = ""
+                def indexElement = 0
+
+                if(tablaLR0[pila.peek()][mapTerminalTokens[a]].size() > 1){
+                    
+                    for(def i=0;i<tablaLR0[pila.peek()][mapTerminalTokens[a]].size();i++){
+                        if(compararLadoDerecho(pilaSimbolos,tablaLR0[pila.peek()][mapTerminalTokens[a]][i].ld)){
+                            indexElement = i
+                            log.debug ":= " + tablaLR0[pila.peek()][mapTerminalTokens[a]][i].ld
+                            break
+                        }                    
+                    }
+                }
+                
+                noTerminal = tablaLR0[pila.peek()][mapTerminalTokens[a]][indexElement].li                                    
+                                
+                tablaLR0[pila.peek()][mapTerminalTokens[a]][indexElement].ld.each{
                     ladoDerecho += it
                 }
                 
@@ -242,9 +257,8 @@ class AnalizadorSintacticoController {
                 movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"reducir ${noTerminal}→${ladoDerecho}")) 
                 auxStringPila = ""
                 auxStringSimbolo = ""
-
-
-                (tablaLR0[pila.peek()][mapTerminalTokens[a]].ld).each{
+                        
+                (tablaLR0[pila.peek()][mapTerminalTokens[a]][indexElement].ld).each{
                     pila.pop()
                     pilaSimbolos.pop()
                 }
@@ -252,7 +266,7 @@ class AnalizadorSintacticoController {
 
                 pilaSimbolos.push(noTerminal)
                 pila.push(tablaLR0[pila.peek()][noTerminal])
-
+                
                 /*
                 log.debug "Items reduccion " 
                     pila.elements().each{
@@ -293,18 +307,32 @@ class AnalizadorSintacticoController {
                     pila.push(tablaLR0[pila.peek()]['ε'])
                     pilaSimbolos.push('ε')                                        
                 }
-                else if(tablaLR0[pila.peek()]['ε'].getClass() == LinkedHashMap){
+                else if(tablaLR0[pila.peek()]['ε'].getClass() == ArrayList){
                 
-                    def noTerminal = tablaLR0[pila.peek()]['ε'].li
                     def ladoDerecho = ""
-                    tablaLR0[pila.peek()]['ε'].ld.each{
+                    def noTerminal = ""
+                    def indexElement = 0
+
+                    if(tablaLR0[pila.peek()]['ε'].size() > 1){                                        
+                        for(def i=0;i<tablaLR0[pila.peek()]['ε'].size();i++){
+                            if(compararLadoDerecho(pilaSimbolos,tablaLR0[pila.peek()]['ε'][i].ld)){
+                                indexElement = i
+                                log.debug ":= " + tablaLR0[pila.peek()][mapTerminalTokens[a]][i].ld
+                                break
+                            }                    
+                        }
+                    }
+                    
+                    noTerminal = tablaLR0[pila.peek()]['ε'][indexElement].li
+                                    
+                    tablaLR0[pila.peek()]['ε'][indexElement].ld.each{
                         ladoDerecho += it
                     }
-                
+                    
                     pila.elements().each{
                         auxStringPila += "${it} "
                     }
-                
+                    
                     pilaSimbolos.elements().each{
                         auxStringSimbolo+= "${it} "
                     }
@@ -312,16 +340,14 @@ class AnalizadorSintacticoController {
                     movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"reducir ${noTerminal}→${ladoDerecho}")) 
                     auxStringPila = ""
                     auxStringSimbolo = ""
-
-
-                    (tablaLR0[pila.peek()]['ε'].ld).each{
+                            
+                    (tablaLR0[pila.peek()]['ε'][indexElement].ld).each{
                         pila.pop()
                         pilaSimbolos.pop()
                     }
-                
-
+                    
                     pilaSimbolos.push(noTerminal)
-                    pila.push(tablaLR0[pila.peek()][noTerminal])
+                    pila.push(tablaLR0[pila.peek()][noTerminal])                                    
                 }
             }
             else{
@@ -337,6 +363,40 @@ class AnalizadorSintacticoController {
         movimientos
     }
     
+    def compararLadoDerecho(def pila,def ladoDerecho){
+        def paux = new Stack<String>()
+        def val = true
+
+        pila.elements().each{
+            log.debug it
+        }
+
+        def invert = ladoDerecho.reverse()
+        def index = 0
+
+        for(def i=0;i<invert.size();i++){
+            paux.push(pila.peek())
+            pila.pop()
+            
+            log.debug "${invert[i]} - ${paux.peek()}"
+            if(invert[i] != paux.peek()){
+                val = false
+                index = i
+                break                                
+            }
+        }        
+
+        if(val)
+            index = invert.size()-1
+
+        (index+1).times{
+            pila.push(paux.peek())
+            paux.pop()
+        }
+        
+        return val
+    }
+
     def getW(def cadena,def terminales){
         def wList = []
         def subcadena = ""
