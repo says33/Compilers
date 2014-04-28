@@ -18,19 +18,19 @@ class ItemLR{
 
 	def cerradura(def I){
 		
-		arregloBooleanTerminales = [:]
+		def arregloBooleanNoTerminales = [:]
 
 		itemsNoTerminales.each{ key,value ->
-			arregloBooleanTerminales[key] = false
+			arregloBooleanNoTerminales[key] = false
 		}
 
 		def J = I		
 		def listProdAux = []
 		
 		for(def i=0;i<J.size();i++){			
-			if(!J.get(i).next.equals('ε')){
-				if(!arregloBooleanTerminales[J.get(i).next]){
-					arregloBooleanTerminales[J.get(i).next] = true					
+			if(!J.get(i).next.equals('ε') || J.get(i).prev.equals('ε')){
+				if(!arregloBooleanNoTerminales[J.get(i).next]){
+					arregloBooleanNoTerminales[J.get(i).next] = true					
 					getProduccionesSiguiente(J.get(i).next).each{ prod->
 						J.add(prod)
 					}
@@ -52,20 +52,50 @@ class ItemLR{
 		listProducciones
 	}
 
+	def ir_AContains(def item,def ir_A){
+	    
+	    def t = ir_A.findAll{it.prod == item.prod}
+
+	    if(t) return true
+
+	    false
+	}
+
 	def ir_A(def I,def X){
 						
 		def ir_Alist = []
+		
+		/*
+		def f = new File("/home/gamaliel/Escritorio/datos.log")		
+		f.createNewFile()
+
+		f<< "Originales\n\n"		
+		I.each{
+			f << "${it}\n"
+		}
+		f<< "FinOriginales\n\n"
+		*/
 
 		I.each{ item ->
 			if(item.next.equals(X)){				
 				itemsNoTerminales.get(item.li).each{ listItem->					
 					if(listItem[item.pointPosition+1])
-						if(listItem[item.pointPosition+1].prev.equals(item.next))					
-							ir_Alist.add(listItem[item.pointPosition+1])							
-				}				
+						if(listItem[item.pointPosition+1].prev.equals(item.next)){
+							if(!ir_AContains(listItem[item.pointPosition+1],ir_Alist))
+								ir_Alist.add(listItem[item.pointPosition+1])
+						}								
+				}		
 			}
-		}
-
+		}		
+		
+		/*
+		f<< "Items Ir_A\n\n"
+		ir_Alist.each{
+			f << "${it}\n"
+		}					
+		f<< "Fin Items\n\n"
+		*/
+		
 		cerradura(ir_Alist)		
 	}
 
@@ -73,9 +103,10 @@ class ItemLR{
 		
 		this.itemsNoTerminales = Gp
 		def simboloGramatical = []
+
 		simboloGramatical.addAll(itemsNoTerminales.keySet())
 		simboloGramatical.remove(Gp.iterator().next().key)
-		simboloGramatical.addAll(terminales)
+		simboloGramatical += terminales
 
 		log.debug "Simbolos gramaticales " + simboloGramatical
 		
@@ -85,8 +116,8 @@ class ItemLR{
 		def I = [] 
 		def C = []
 		def ir_AListAux = []
-		I.add(((Gp.iterator().next().value)[0])?.get(0))
-		C.add(cerradura(I))
+		I.add(((Gp.iterator().next().value)[0])?.get(0))		
+		C.add(cerradura(I))		
 		automataLR0.addEdoToAutomata(C[0])
 		
 		def auxTransicion = [:]
@@ -94,7 +125,7 @@ class ItemLR{
 		for(def i=0;i<C.size();i++){
 			simboloGramatical.each{ X ->
 				ir_AListAux = ir_A(C[i],X)	
-				if(ir_AListAux){
+				if(ir_AListAux){										
 					def edoTransicion = containsItems(C,ir_AListAux)
 					if(edoTransicion == -1){						
 						C.add(ir_AListAux)
@@ -111,7 +142,19 @@ class ItemLR{
 			auxTransicion = [:]			
 		}
 
-		automataLR0.printAutomata()
+		/*
+		log.debug "\n"
+		C.each{
+			log.debug "C Items"
+			it.each{
+				log.debug "Prod" + it.prod
+			}
+			log.debug "-------"
+		}
+		log.debug "\n"
+		*/
+
+		//automataLR0.printAutomata()
 		
 		automataLR0
 	}

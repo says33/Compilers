@@ -31,8 +31,8 @@ public class AnalizadorLexicoController {
 
     public void readTable(ScannerLexico scanner){
         try{
-            String path = "//Users//gamaliel//Desktop//FNTabla.bin";
-            File afnTableFile = new File(path);
+            String path = "//home//gamaliel//Escritorio//AFNTabla.bin";
+            File afnTableFile = new File(path);        
             FileInputStream fis = new FileInputStream(afnTableFile);
             ObjectInputStream input = new ObjectInputStream(fis);
 
@@ -79,7 +79,6 @@ public class AnalizadorLexicoController {
 
         afd.printTransiciones();
         afdFile.createFile(afd,tokensAFD);
-
         //printTokens(tokensAFD);
     }
 

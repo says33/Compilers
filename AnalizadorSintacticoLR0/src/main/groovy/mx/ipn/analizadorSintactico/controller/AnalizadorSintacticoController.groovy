@@ -11,7 +11,7 @@ import mx.ipn.analizadorSintactico.utils.Movimiento
  * Author: Gamaliel Jiménez *
  * Date: 15-Abril-2014      *
  ****************************/
-
+ 
 @Log4j
 class AnalizadorSintacticoController {
     
@@ -153,7 +153,7 @@ class AnalizadorSintacticoController {
 
 
     def analizaCadena(def tablaLR0,def cadena,def terminales,def lexemasAndTokens){
-        
+                
         def cadenaReal = []
         def tokensEntrada=[]
         def subcadena = ""
@@ -213,8 +213,7 @@ class AnalizadorSintacticoController {
                 pila.push(tablaLR0[pila.peek()][mapTerminalTokens[a]])
 
                 pilaSimbolos.push(mapTerminalTokens[a])
-                
-                
+                            
                 //log.debug "Items desp --"  
                   //  pila.elements().each{
                     //    log.debug it
@@ -223,8 +222,6 @@ class AnalizadorSintacticoController {
                 
                 a = tokensEntrada[++index]
                 subcadena = subcadena.substring(cadenaReal.get(index-1).length(),subcadena.length())
-
-                log.debug "A " + a  
             }
             else if(tablaLR0[pila.peek()][mapTerminalTokens[a]].getClass() == LinkedHashMap){
                 
@@ -279,7 +276,55 @@ class AnalizadorSintacticoController {
                 movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:"",accion:"ACEPTAR"))
                 break
             }
-            else{                                        
+            else if(tablaLR0[pila.peek()]['ε']){
+                if(tablaLR0[pila.peek()]['ε'] instanceof Integer){
+                    pila.elements().each{
+                        auxStringPila+= "${it} "
+                    }
+                
+                    pilaSimbolos.elements().each{
+                        auxStringSimbolo+= "${it} "
+                    }
+                    
+                    movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"desplazar"))
+                    auxStringPila = ""
+                    auxStringSimbolo = ""
+
+                    pila.push(tablaLR0[pila.peek()]['ε'])
+                    pilaSimbolos.push('ε')                                        
+                }
+                else if(tablaLR0[pila.peek()]['ε'].getClass() == LinkedHashMap){
+                
+                    def noTerminal = tablaLR0[pila.peek()]['ε'].li
+                    def ladoDerecho = ""
+                    tablaLR0[pila.peek()]['ε'].ld.each{
+                        ladoDerecho += it
+                    }
+                
+                    pila.elements().each{
+                        auxStringPila += "${it} "
+                    }
+                
+                    pilaSimbolos.elements().each{
+                        auxStringSimbolo+= "${it} "
+                    }
+
+                    movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"reducir ${noTerminal}→${ladoDerecho}")) 
+                    auxStringPila = ""
+                    auxStringSimbolo = ""
+
+
+                    (tablaLR0[pila.peek()]['ε'].ld).each{
+                        pila.pop()
+                        pilaSimbolos.pop()
+                    }
+                
+
+                    pilaSimbolos.push(noTerminal)
+                    pila.push(tablaLR0[pila.peek()][noTerminal])
+                }
+            }
+            else{
                 noAceptado = true
                 break                
             }

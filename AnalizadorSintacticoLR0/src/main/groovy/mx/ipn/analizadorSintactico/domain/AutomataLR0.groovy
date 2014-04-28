@@ -30,7 +30,12 @@ class AutomataLR0{
 	def printAutomata(){
 		estados.each{ edo ->
 			log.debug "Inicia impresión de transiciones de Edo"
-			
+			log.debug "Items del estado"
+			edo.estadoItems.each{
+				log.debug it
+			}
+			log.debug "Fin Items"
+
 			edo.transiciones.each{ key,value ->
 				log.debug "${key} "
 				value.estadoItems.each{ item ->

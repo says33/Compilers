@@ -13,12 +13,12 @@ import mx.ipn.analizadorSintactico.utils.Follow
 /**
     Author: Gamaliel Jiménez
     Date: 20/Marzo/2014
- **/
+***/
 
 @Log4j
 class AnalizadorSintacticoService {
 
-    def AnalizadorSintacticoService(){       
+    def AnalizadorSintacticoService(){
         log.level = Level.DEBUG      
     }    
 
@@ -34,8 +34,7 @@ class AnalizadorSintacticoService {
     }
     
     def crearAlfabeto(String gramatica){
-        log.debug gramatica.length()
-        
+                
         gramatica.length().times{ i->
             if(!TokenScanner.tokensMap.get(String.valueOf(gramatica.charAt(i))))
                 if(!TokenScanner.alfabeto.contains(String.valueOf(gramatica.charAt(i))))
@@ -92,7 +91,6 @@ class AnalizadorSintacticoService {
 
         def follow = calcularFollow(null,mapOfGramaticaNoAumentada)
 
-
         automataLR0.estados.each{ edo ->
             def row = [:] 
             terminalesAndNoTerminales.each{ terminal ->
@@ -110,8 +108,11 @@ class AnalizadorSintacticoService {
             }
 
             reducciones.each{ r -> 
-                if(follow[r.li]){                    
-                    follow[r.li].each{ term -> tablaAccion[edo.id][term] = r }
+                if(follow[r.li]){
+                    follow[r.li].each{ term -> 
+                        //log.debug r.ld
+                        tablaAccion[edo.id][term] = r
+                    }
                 }
             }
 
@@ -141,11 +142,11 @@ class AnalizadorSintacticoService {
     def reduccionElementos(def itemsEstado,def terminalesAndNoTerminales){
         def reduccion = []
 
-        itemsEstado.findAll{it.next == 'ε'}.each{
+        itemsEstado.findAll{ it.next == 'ε' && (it.prev != 'ε'  || it.prod.split('→')[1] == 'ε.') }.each{
             def ladoDerecho = it.prod.split('→')[1]
             ladoDerecho = ladoDerecho[0..(ladoDerecho.length()-2)]
-            
-            def reduccionMap = [li:it.li,ld:getLista(ladoDerecho,terminalesAndNoTerminales)]
+                                    
+            def reduccionMap = [li:it.li,ld:getLista(ladoDerecho,terminalesAndNoTerminales)]            
             reduccion << reduccionMap
         }
 

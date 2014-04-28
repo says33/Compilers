@@ -32,13 +32,10 @@ class GUI{
     analizadorSintacticoController = new AnalizadorSintacticoController()
     analizadorLexicoController = new AnalizadorLexicoController()
     scanner = new ScannerLexico()
-    analizadorLexicoController.readTable(scanner)
+    //analizadorLexicoController.readTable(scanner)
 
 		start{
-      def info = new Info()
-      info.listaPrueba = [ new Movimiento(pila:"0",simbolos:""),
-                           new Movimiento(pila:"0 5",simbolos:"num") ]
-
+      
       final fileChooser = fileChooser(initialDirectory: ".", title: "Selecciona Gramatica"){
                             		filter("Gramaticas", extensions: ["*.gram"])
                         	}
@@ -57,26 +54,41 @@ class GUI{
                                         mapaDeListas = analizadorSintacticoController.crearLista(file)
                                         itemsNoTerminales = analizadorSintacticoController.crearItems(mapaDeListas)
 
-                                        itemsNoTerminales.each{
-                                            println "Items " + it
+                                        
+                                        itemsNoTerminales.each{ key,value->
+                                            println "-----------"
+                                            value.each{ listItem ->
+                                                listItem.each{ k,v ->
+                                                    println v.prod
+                                                }
+                                            }
+                                            println "----------"
                                         }
+                                        
                                         terminales = analizadorSintacticoController.obtenerTerminales(mapaDeListas)
-                                        tablaLR0 = analizadorSintacticoController.crearTablaLR0(itemsNoTerminales,terminales,mapaDeListas)                                        
+                                        tablaLR0 = analizadorSintacticoController.crearTablaLR0(itemsNoTerminales,terminales,mapaDeListas)
+
+                                        println ""
+                                        tablaLR0.each{
+                                            println "Row  ${it}"
+                                        }
+                                        println ""
+
                                         def terminalesFieldArray = []
                                         def tokensFieldArray = []
+                                        def terminalesWithoutEpsilon =[]
+                                        terminalesWithoutEpsilon += terminales
+                                        terminalesWithoutEpsilon.remove('ε')
 
                                         bpane.setTop(gridPane(hgap: 5, vgap: 5, padding: 20, alignment: "center",id:'gPane'){
-                                            terminales.size().times { i ->
-                                               label(text:terminales[i],row:0,column:i)
-                                               terminalesFieldArray.add(textField(promptText:terminales[i], row: 1, column: i))
+                                            terminalesWithoutEpsilon.size().times { i ->
+                                               label(text:terminalesWithoutEpsilon[i],row:0,column:i)
+                                               terminalesFieldArray.add(textField(promptText:terminalesWithoutEpsilon[i], row: 1, column: i))
                                                tokensFieldArray.add(textField(promptText:"Token " + i, row: 2, column: i))
                                             }
 
                                             button(text:"Generar Analizador Léxico",onAction:{
                                                 def mapTerminalTokens = [:]
-                                                def terminalesWithoutEpsilon =[]
-                                                terminalesWithoutEpsilon += terminales
-                                                terminalesWithoutEpsilon.remove('ε')
 
                                                 tokensFieldArray.size().times{ i->
                                                     mapTerminalTokens[tokensFieldArray[i].text]=terminalesWithoutEpsilon[i]

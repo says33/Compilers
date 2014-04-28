@@ -96,7 +96,7 @@ public class AFDFile {
 
         try{
                         
-            String path = "//Users//gamaliel//Desktop//FNTabla.bin";
+            String path = "//home//gamaliel//Escritorio//AFNTabla.bin";
             File afnTableFile = new File(path);
             FileOutputStream fo = new FileOutputStream(afnTableFile);
             ObjectOutputStream out = new ObjectOutputStream(fo);
