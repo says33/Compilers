@@ -1,2 +1,4 @@
-E→E+T|T;
-T→num|ε;
+E→EorT|T;
+T→T&C|C;
+C→C+|C*|C?|F;
+F→(E)|simb;

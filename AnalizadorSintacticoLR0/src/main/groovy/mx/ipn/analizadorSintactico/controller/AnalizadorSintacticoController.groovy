@@ -47,10 +47,9 @@ class AnalizadorSintacticoController {
        def lista = analizadorSintacticoService.crearListaGramatica(gramatica)
        def mapaDeListas = [:]
        analizadorSintacticoService.crearMapaDeListas(mapaDeListas,lista)
-
+       
        mapaDeListas
     }
-
 
     def crearItems(def mapaDeListas){
         def itemsNoTerminales = [:]
@@ -192,8 +191,7 @@ class AnalizadorSintacticoController {
         }
 
         pila.push(edos[0])
-        
-        
+
         def noAceptado = false
 
         while(1){
@@ -205,13 +203,12 @@ class AnalizadorSintacticoController {
                 pilaSimbolos.elements().each{
                     auxStringSimbolo+= "${it} "
                 }
-                
+
                 movimientos.add(new Movimiento(pila:auxStringPila,simbolos:auxStringSimbolo,entrada:subcadena,accion:"desplazar"))
                 auxStringPila = ""
                 auxStringSimbolo = ""
 
                 pila.push(tablaLR0[pila.peek()][mapTerminalTokens[a]])
-
                 pilaSimbolos.push(mapTerminalTokens[a])
                             
                 //log.debug "Items desp --"  

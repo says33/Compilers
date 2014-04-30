@@ -53,7 +53,6 @@ class GUI{
                                         
                                         mapaDeListas = analizadorSintacticoController.crearLista(file)
                                         itemsNoTerminales = analizadorSintacticoController.crearItems(mapaDeListas)
-
                                         
                                         itemsNoTerminales.each{ key,value->
                                             println "-----------"
@@ -68,11 +67,11 @@ class GUI{
                                         terminales = analizadorSintacticoController.obtenerTerminales(mapaDeListas)
                                         tablaLR0 = analizadorSintacticoController.crearTablaLR0(itemsNoTerminales,terminales,mapaDeListas)
 
-                                        println ""
+                                        println "\n\n"
                                         tablaLR0.each{
                                             println "Row  ${it}"
-                                        }
-                                        println ""
+                                        }                                        
+                                        println "\n\n"
 
                                         def terminalesFieldArray = []
                                         def tokensFieldArray = []

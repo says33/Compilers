@@ -142,7 +142,7 @@ class ItemLR{
 			auxTransicion = [:]			
 		}
 
-		/*
+		
 		log.debug "\n"
 		C.each{
 			log.debug "C Items"
@@ -152,7 +152,7 @@ class ItemLR{
 			log.debug "-------"
 		}
 		log.debug "\n"
-		*/
+		
 
 		//automataLR0.printAutomata()
 		

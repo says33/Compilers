@@ -84,12 +84,12 @@ class AnalizadorSintacticoService {
         //Mapa que contiene el follow de cada elemento
         def terminalesAndNoTerminales =[]
         terminalesAndNoTerminales += terminales + '$' + mapOfGramaticaNoAumentada.keySet()
-
+                
         terminalesAndNoTerminales.each{
             log.debug it
         }
 
-        def follow = calcularFollow(null,mapOfGramaticaNoAumentada)
+        def follow = calcularFollow(null,mapOfGramaticaNoAumentada)        
 
         automataLR0.estados.each{ edo ->
             def row = [:] 
@@ -166,11 +166,12 @@ class AnalizadorSintacticoService {
         def mapOfFollow = [:]
         def noTerminales = mapOfLists.keySet()
 
-        def follow = new Follow(mapOfLists,null)        
+        def follow = new Follow(mapOfLists,null)
 
         noTerminales.each{ noTerminal ->
             def auxmap = [:]
-            mapOfFollow[noTerminal] = follow.getFollowOfNodo(mapOfLists[noTerminal])
+            mapOfFollow[noTerminal] = follow.getFollowOfNodo(mapOfLists[noTerminal])            
+            
         }
 
         mapOfFollow

@@ -1,10 +1,13 @@
 package mx.ipn.analizadorSintactico.utils
 
+import org.apache.log4j.*
+import groovy.util.logging.*
 import mx.ipn.analizadorSintactico.domain.Nodo
 /******************************
  * Author: Gamaliel Jiménez   *
  * Date: 19-03-14             *
  ******************************/
+@Log4j
 class Follow {
 
     def mapOfLists
@@ -14,6 +17,7 @@ class Follow {
     def Follow(def mapOfLists,def mapOfFirst){
         this.mapOfLists = mapOfLists
         this.mapOfFirst = mapOfFirst
+        log.level = Level.DEBUG
     }
 
     def getFollowOfNodo(Nodo n){
@@ -40,6 +44,9 @@ class Follow {
                     lista.add(it.value.simbolo)
             }
         }
+        
+        if(n.simbolo == 'F')
+            log.debug "Extremo Producciones ${esExtremoProducciones(n.simbolo)}"
         
         lista.addAll(esExtremoProducciones(n.simbolo))
 
@@ -85,8 +92,8 @@ class Follow {
     def esExtremoProducciones(def simbNodo){
         def list = []
 
-        mapOfLists.each{
-            if(simbNodo.equals(ultimoNodoProduccion(it.value.sig)) && !simbNodo.equals(it.value.simbolo))
+        mapOfLists.each{        
+            if((ultimoNodoProduccion(it.value.sig).contains(simbNodo)) && !simbNodo.equals(it.value.simbolo))
                 list.addAll(getFollowOfNodo(mapOfLists.get(it.value.simbolo)))
         }
 
@@ -94,15 +101,20 @@ class Follow {
     }
 
     def ultimoNodoProduccion(def nodo){
+        def list = []        
+        
+        if(nodo.abajo){            
+            list += ultimoNodoProduccion(nodo.abajo)
+        }    
+
         def aux = nodo
-
-        if(nodo.abajo)
-            ultimoNodoProduccion(nodo.abajo)
-
-        while(aux.sig)
+        
+        while(aux.sig)            
             aux = aux.sig
+        
+        list << aux.simbolo
 
-        aux.simbolo
+        list
     }
 
     def getItemsOfFirst(def simbNodo){
