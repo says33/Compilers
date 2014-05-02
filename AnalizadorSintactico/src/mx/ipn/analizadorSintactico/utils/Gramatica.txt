@@ -1,5 +1,7 @@
 E→TE';
-E'→+TE'|-TE'|ε;
-T→FT';
-T'→*FT'|/FT'|ε;
-F→(E)|num;
+E'→orTE'|ε;
+T→CT';
+T'→&CT'|ε;
+C→FC';
+C'→+C'|*C'|?C|ε;
+F→(E)|simb;

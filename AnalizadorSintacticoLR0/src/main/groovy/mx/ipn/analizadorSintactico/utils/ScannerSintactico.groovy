@@ -22,10 +22,10 @@ class ScannerSintactico {
 
     def getToken() {
         current++
-        counter++        
+        counter++
 
         if (current < gramatica.length()) {
-            lexema = gramatica.substring(current, counter)
+            lexema = gramatica.substring(current,counter)
             return TokenScanner.tokensMap.get(String.valueOf(lexema.charAt(lexema.size() - 1)))
         }
 
@@ -37,7 +37,7 @@ class ScannerSintactico {
 
         if (isTerminal(lexema)) {
 
-            while (isTerminal((lexema = gramatica.substring(current, ++counter)).charAt(lexema.length() - 1))) {
+            while(isTerminal((lexema = gramatica.substring(current, ++counter)).charAt(lexema.length() - 1))) {
                 lexema = gramatica.substring(current, counter)
             }
             counter--

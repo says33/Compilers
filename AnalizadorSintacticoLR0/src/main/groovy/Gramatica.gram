@@ -1,4 +1,7 @@
-E→EorT|T;
-T→T&C|C;
-C→C+|C*|C?|F;
-F→(E)|simb;
+G→L;
+L→R|RpuntoycomaL;
+R→IflechaD;
+I→simb;
+D→D'|D'orD;
+D'→S;
+S→simb|simbS;

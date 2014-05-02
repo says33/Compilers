@@ -94,6 +94,10 @@ class GUI{
                                                 }  
                                                 mapTerminalTokens['0'] = '$'                                            
                                                 
+                                                terminalesFieldArray.each{
+                                                    println "Regex ${it}"
+                                                }
+
                                                 analizadorLexicoController.createTable(terminalesFieldArray,tokensFieldArray)
                                                 //Los tokens y su valor se inyectan al controlador del analizador sintáctico
                                                 analizadorSintacticoController.setMapTerminalTokens(mapTerminalTokens)
