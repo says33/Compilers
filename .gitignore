@@ -13,3 +13,5 @@ AnalizadorLexico/out/
 out/
 AnalizadorSintacticoLR0/.gradle/
 AnalizadorSintacticoLR0/build/
+build/
+.gradle/
