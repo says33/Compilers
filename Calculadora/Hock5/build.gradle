@@ -1,0 +1,31 @@
+apply plugin: 'groovy'
+
+repositories{
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies{
+    compile 'org.codehaus.groovy:groovy-all:2.1.1'
+    compile 'log4j:log4j:1.2.17'
+    compile 'de.jflex:jflex:1.5.1'
+    compile name:'java-cup-11a'
+    testCompile 'junit:junit:4.11'
+}
+
+task run(type: JavaExec){
+    main = 'Main'
+    classpath sourceSets.main.runtimeClasspath
+}
+
+task uberjar(type: Jar,dependsOn:[':compileJava',':compileGroovy']){
+    from files(sourceSets.main.output.classesDir)
+    from configurations.runtime.asFileTree.files.collect{ zipTree(it) }
+    
+    manifest{
+        attributes 'Main-Class':'Main'
+    }
+}
+
