@@ -5,10 +5,10 @@ parser code
 {: :}
 
 terminal            PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN;
-terminal 	    Integer NUMBER;
+terminal 	    Double NUMBER;
 
 non terminal root;
-non terminal Integer expr;
+non terminal Double expr;
 
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
@@ -17,15 +17,15 @@ start with root;
 root ::= expr:e 
 	{: System.out.println(" = " + e +";"); :};
 expr ::= expr:e1 PLUS expr:e2
-	   {: RESULT=new Integer(e1.intValue() + e2.intValue()); :}
+	   {: RESULT=new Double(e1) + new Double(e2); :}
        | expr:e1 MINUS expr:e2
-	   {: RESULT=new Integer(e1.intValue() - e2.intValue()); :}
+	   {: RESULT=new Double(e1) - new Double(e2); :}
        | expr:e1 TIMES expr:e2
-	   {: RESULT=new Integer(e1.intValue() * e2.intValue()); :}
+	   {: RESULT=new Double(e1) * new Double(e2); :}
        | expr:e1 DIV expr:e2
-	   {: RESULT=new Integer(e1.intValue() / e2.intValue()); :}
+	   {: RESULT=new Double(e1) / new Double(e2); :}
        | LPAREN expr:e RPAREN
 	   {: RESULT=e; :}
        | NUMBER:n
-	   {: RESULT=new Integer(n.intValue()); :}
+	   {: RESULT=new Double(n); :}
        ;
