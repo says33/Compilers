@@ -1,0 +1,31 @@
+package mx.ipn.hock5.utils;
+import java_cup.runtime.*;
+
+parser code
+{: :}
+
+terminal            PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN;
+terminal 	    Integer NUMBER;
+
+non terminal root;
+non terminal Integer expr;
+
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
+
+start with root;
+root ::= expr:e 
+	{: System.out.println(" = " + e +";"); :};
+expr ::= expr:e1 PLUS expr:e2
+	   {: RESULT=new Integer(e1.intValue() + e2.intValue()); :}
+       | expr:e1 MINUS expr:e2
+	   {: RESULT=new Integer(e1.intValue() - e2.intValue()); :}
+       | expr:e1 TIMES expr:e2
+	   {: RESULT=new Integer(e1.intValue() * e2.intValue()); :}
+       | expr:e1 DIV expr:e2
+	   {: RESULT=new Integer(e1.intValue() / e2.intValue()); :}
+       | LPAREN expr:e RPAREN
+	   {: RESULT=e; :}
+       | NUMBER:n
+	   {: RESULT=new Integer(n.intValue()); :}
+       ;
