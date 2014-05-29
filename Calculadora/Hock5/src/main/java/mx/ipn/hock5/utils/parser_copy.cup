@@ -1,0 +1,78 @@
+package mx.ipn.hock5.utils;
+import java_cup.runtime.*;
+import javax.swing.JTextArea;
+import java.util.ArrayList;
+
+parser code
+{: 
+   public Double[] mem = new Double[26];
+
+   private JTextArea textArea;
+   
+   public void setJTextArea(JTextArea textArea){
+       this.textArea = textArea;
+   }
+
+   public void setTextToTextArea(String texto){
+       this.textArea.setText(texto);
+   }
+:}
+
+terminal      PUNTOYCOMA;
+terminal      PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN,POW;
+terminal      char VAR;
+terminal      ASSIGN;
+terminal      UNARYMINUS;
+terminal      Double NUMBER;
+terminal      SALTOLINEA;
+terminal      END;
+
+non terminal prog;
+non terminal list;
+non terminal Double expr;
+non terminal Double asign;
+
+precedence right ASSIGN;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIV;
+precedence left UNARYMINUS;
+
+start with prog;
+
+prog ::= list;
+
+list ::= list SALTOLINEA expr:e  
+         {:
+             System.out.println(e.toString());
+         :}
+        | list asign SALTOLINEA
+        | expr:e
+         {: 
+            System.out.println(e.toString());
+            parser.setTextToTextArea(e.toString());
+         :};
+
+asign ::= VAR:v ASSIGN expr:e
+          { RESULT = mem[(int)v - (int)('a')] = new Double(e)};
+
+expr ::= VAR:v ASSIGN expr:e
+        {:  
+           int index = Character.getNumericValue(v)-Character.getNumericValue('a');
+           RESULT = parser.mem[index] = new Double(e);
+        :}
+       | expr:e1 PLUS expr:e2
+	   {: RESULT=new Double(e1) + new Double(e2); :}
+       | expr:e1 MINUS expr:e2
+	   {: RESULT=new Double(e1) - new Double(e2); :}
+       | expr:e1 TIMES expr:e2
+	   {: RESULT=new Double(e1) * new Double(e2); :}
+       | expr:e1 DIV expr:e2
+	   {: RESULT=new Double(e1) / new Double(e2); :}
+       | LPAREN expr:e RPAREN
+	   {: RESULT=e; :}
+       | MINUS expr:e
+     {: RESULT= -1*(new Double(e)); :} 
+       %prec UNARYMINUS
+       | NUMBER:n
+	   {: RESULT=new Double(n); :}
+       ;

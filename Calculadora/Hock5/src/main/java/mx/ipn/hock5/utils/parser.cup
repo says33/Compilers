@@ -1,22 +1,117 @@
 package mx.ipn.hock5.utils;
+import mx.ipn.hock5.domain.*;
 import java_cup.runtime.*;
+import javax.swing.JTextArea;
+import java.util.ArrayList;
 
 parser code
-{: :}
+{: 
+   private JTextArea textArea;
+   private FunctionMemory functionMemory;
+   
+   public void setJTextArea(JTextArea textArea){
+       this.textArea = textArea;
+   }
 
-terminal            PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN;
-terminal 	    Double NUMBER;
+   public void setTextToTextArea(String texto){
+       this.textArea.append(texto);
+   }
 
-non terminal root;
+   public void setFunctionMemory(FunctionMemory functionMemory){
+       this.functionMemory = functionMemory;
+   }
+
+   public void saveFunctionInMemory(Command cmd){
+       this.functionMemory.store(cmd);
+   }
+
+   public FunctionMemory getFunctionMemory(){
+       return functionMemory;
+   }
+:}
+
+terminal      PRINT,WHILE,IF,ELSE;
+terminal      GT,GE,LT,LE,EQ,NE;
+terminal      RKEY,LKEY;
+terminal      PUNTOYCOMA;
+terminal      PLUS, MINUS, TIMES, DIV, LPAREN, RPAREN,POW;
+terminal      char VAR;
+terminal      ASSIGN;
+terminal      UNARYMINUS;
+terminal      Double NUMBER;
+terminal      SALTOLINEA;
+
+non terminal prog;
+non terminal list;
 non terminal Double expr;
+non terminal asgn;
+non terminal stmt;
+non terminal stmtlist;
+non terminal cond,while;
 
+precedence right ASSIGN;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIV;
+precedence left UNARYMINUS;
+precedence left GT,GE,LT,LE,EQ,NE;
 
-start with root;
-root ::= expr:e 
-	{: System.out.println(" = " + e +";"); :};
-expr ::= expr:e1 PLUS expr:e2
+start with prog;
+
+prog ::= list;
+
+list ::= // empty
+        | list asgn SALTOLINEA {:
+	      parser.getFunctionMemory().executeAll();
+	      parser.getFunctionMemory().clearAll();
+	  :}
+        | list stmt SALTOLINEA;
+        
+asgn ::= VAR:v ASSIGN expr:e 
+         {:
+             Function function = new Function();
+	     Command asignCommand = new FunctionAsignCommand(function,v,e);
+	     parser.saveFunctionInMemory(asignCommand);
+         :}; 
+
+stmt ::= PRINT expr:e
+	 {:
+             Function function = new Function();
+	     Command printCommand = new FunctionPrintCommand(function,e); 
+	     parser.saveFunctionInMemory(printCommand);
+	     parser.setTextToTextArea(e.toString()+"\n");
+	 :}
+	| while cond stmt	
+	  {:
+	      parser.getFunctionMemory().getHistory().get(0).execute();
+	  :}
+	| LKEY stmtlist RKEY {: System.out.println("Lista"); :};
+
+cond ::= LPAREN expr:e1 GT expr:e2 RPAREN
+         {:  Function function = new Function();
+	     FunctionCondCommand functionCondCommand = new FunctionCondCommand(function);
+	      
+	     Command condFunction = functionCondCommand; 
+	     parser.saveFunctionInMemory(condFunction);
+         :}
+        |LPAREN expr:e1 GE expr:e2 RPAREN
+	 {:
+	     Function function = new Function();
+	 :}; 
+
+while ::= WHILE {:
+                    Function function = new Function();
+	      	    Command whileFunction = new FunctionWhileCommand(function,parser.getFunctionMemory());
+	       	    parser.saveFunctionInMemory(whileFunction);
+		:};
+
+stmtlist ::= /*Epsilon*/
+	    | stmtlist stmt
+	    | stmtlist asgn
+	    | stmtlist expr;
+
+expr ::= VAR:v
+	   {: RESULT = Memoria.memory[(int)v - (int)('a')]; :}
+       | expr:e1 PLUS expr:e2
 	   {: RESULT=new Double(e1) + new Double(e2); :}
        | expr:e1 MINUS expr:e2
 	   {: RESULT=new Double(e1) - new Double(e2); :}
@@ -26,6 +121,9 @@ expr ::= expr:e1 PLUS expr:e2
 	   {: RESULT=new Double(e1) / new Double(e2); :}
        | LPAREN expr:e RPAREN
 	   {: RESULT=e; :}
+       | MINUS expr:e
+           {: RESULT= -1*(new Double(e)); :} 
+       %prec UNARYMINUS
        | NUMBER:n
 	   {: RESULT=new Double(n); :}
        ;
