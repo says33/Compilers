@@ -13,7 +13,7 @@ import mx.ipn.analizadorSintactico.domain.AFD
 
 class GUI{
 
-	def analizadorSintacticoController
+  def analizadorSintacticoController
   def analizadorLexicoController
   def mapaDeListas
   def itemsNoTerminales

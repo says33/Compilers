@@ -10,6 +10,7 @@ repositories{
 dependencies{
     compile 'org.codehaus.groovy:groovy-all:2.1.1'
     compile 'log4j:log4j:1.2.17'
+    compile 'mysql:mysql-connector-java:5.1.30'
     testCompile 'junit:junit:4.11'
 }
 
