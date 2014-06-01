@@ -1,24 +1,59 @@
 package mx.ipn.proyectoFinal.utils
 
 import groovy.sql.Sql
+import java.sql.ResultSet
+import java.util.Properties
 
 class DataBase{
 
-	def db = [url:'jdbc:mysql://localhost/DataBasePrueba',
-			  user:'egjimenezg',
-			  password:'egjimenezg',
-			  driver:'com.mysql.jdbc.Driver']
+    String url = 'jdbc:mysql://localhost/'
+    String dataBaseName
+    String user
+    String password
+    String driver = 'com.mysql.jdbc.Driver'			  						  
     def sql
 	
-	def DataBase(){								
-		 sql = Sql.newInstance(db.url,db.user,db.password,db.driver)
-	}
+    def DataBase(){								
+		Properties prop = new Properties()		
+		def classLoader = Thread.currentThread().getContextClassLoader()		
+		InputStream inputStream = classLoader.getResourceAsStream("DB.properties")
+		prop.load(inputStream)
 
-	def query(){
-		sql.eachRow("SELECT * FROM Cliente"){ row ->
-			println row
-		}
-	}
+		user = prop.dbuser
+		password = prop.dbpassword
+		dataBaseName = prop.database
+		
+		if(!inputStream)
+			throw new FileNotFoundException("Propery file not found in the classpath")		 
+    }
+
+    def getTableNames(){
+    	sql = Sql.newInstance(url+dataBaseName,user,password,driver)
+        def tableNames = []
+
+        def md = sql.connection.metaData
+        
+        def rs = md.getTables(null, null,"%",null);
+        
+        while(rs.next())
+            tableNames << rs.getString(3)
+
+        tableNames            
+    }	
+
+    def getColumnNamesFromTable(String tableName){
+        sql = Sql.newInstance(url+dataBaseName,user,password,driver)
+        def columnNames = []
+
+        def md = sql.connection.metaData
+        def rs = md.getColumns(null,null,tableName,"%")
+
+        while(rs.next())
+            columnNames << rs.getString("COLUMN_NAME")
+
+        columnNames
+    }
+
 }
 
 
