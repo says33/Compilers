@@ -1,0 +1,19 @@
+package mx.ipn.proyectoFinal.utils;
+import java_cup.runtime.*;
+
+parser code
+{: 
+:}
+
+terminal  TABLE;
+
+non terminal Rp;
+non terminal String R;
+
+start with Rp;
+
+Rp ::= R:r {:    
+    System.out.println(r);
+:};
+
+R ::= TABLE:t {: RESULT = (String)t; :};

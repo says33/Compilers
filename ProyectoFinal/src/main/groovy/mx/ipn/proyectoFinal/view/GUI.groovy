@@ -117,6 +117,11 @@ class GUI{
 	    							td{
 	    								button text:'Limpiar',actionPerformed:{ query.text='' }	
 	    							}
+	    							td{
+	    								button text:'Ejecutar consulta',actionPerformed:{
+	    									parserRelacionalController.parseString(query.text)		
+	    								}
+	    							}
 	    						}
 	    					}
 	    				}

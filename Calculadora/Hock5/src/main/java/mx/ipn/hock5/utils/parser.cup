@@ -66,16 +66,15 @@ list ::= // empty
 	  :}
         | list stmt SALTOLINEA;
         
-asgn ::= VAR:v ASSIGN expr:e 
-         {:
-             Function function = new Function();
-	     Command asignCommand = new FunctionAsignCommand(function,v,e);
-	     parser.saveFunctionInMemory(asignCommand);
-         :}; 
+asgn ::= VAR:v ASSIGN expr:e {:
+        Function function = new Function();
+        Command asignCommand = new FunctionAsignCommand(function,v,e);
+        parser.saveFunctionInMemory(asignCommand);
+    :}; 
 
 stmt ::= PRINT expr:e
 	 {:
-             Function function = new Function();
+       Function function = new Function();
 	     Command printCommand = new FunctionPrintCommand(function,e); 
 	     parser.saveFunctionInMemory(printCommand);
 	     parser.setTextToTextArea(e.toString()+"\n");
