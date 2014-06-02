@@ -54,6 +54,26 @@ class DataBase{
         columnNames
     }
 
+    def query(String sqlQuery){
+        sql = Sql.newInstance(url+dataBaseName,user,password,driver)
+        def mapOfData = [:]
+        mapOfData.columns = []
+
+        def processMeta = { metaData ->            
+            (1..metaData.columnCount).each{ i ->
+                mapOfData.columns << metaData.getColumnName(i)
+            }
+        }
+
+        mapOfData.data = []
+
+        sql.eachRow(sqlQuery,processMeta){            
+            mapOfData.data << it.toRowResult().values()
+        }
+
+        mapOfData
+    }
+
 }
 
 

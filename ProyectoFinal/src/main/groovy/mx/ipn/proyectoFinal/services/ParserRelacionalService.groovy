@@ -30,4 +30,9 @@ class ParserRelacionalService{
 		def db = new DataBase()
 		db.getColumnNamesFromTable(tableName)
 	}
+
+	def getDataFromDataBase(String sqlQuery){
+		def db = new DataBase()
+		db.query(sqlQuery);
+	}
 }

@@ -95,7 +95,7 @@ public class AFDFile {
         }
 
         try{
-            File afnTableFile = new File("//home//gamaliel//Escritorio//AFNTabla.bin");
+            File afnTableFile = new File("//users//gamaliel//Desktop//AFNTabla.bin");
             FileOutputStream fo = new FileOutputStream(afnTableFile);
             ObjectOutputStream out = new ObjectOutputStream(fo);
 

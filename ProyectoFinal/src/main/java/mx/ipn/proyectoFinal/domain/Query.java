@@ -5,6 +5,7 @@ public class Query{
 	private ArrayList<String> listaCampos;
 	private ArrayList<String> listaTablas;
 	private ArrayList<String> listaCondiciones;
+	private String finalQuery;
 
 	public Query(){
 		listaCampos = new ArrayList<String>();
@@ -34,5 +35,13 @@ public class Query{
 
 	public void setListaCondiciones(ArrayList<String> listaCondiciones){
 		this.listaCondiciones = listaCondiciones;
+	}
+
+	public String getFinalQuery(){
+		return finalQuery;
+	}
+
+	public void setFinalQuery(String finalQuery){
+		this.finalQuery = finalQuery;
 	}
 }

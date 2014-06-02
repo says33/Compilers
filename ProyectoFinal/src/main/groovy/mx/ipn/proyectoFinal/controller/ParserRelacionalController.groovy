@@ -26,19 +26,30 @@ class ParserRelacionalController{
 		parserRelacionalService.getColumnsFromTable(tableName)
 	}
 
-	def parseString(def text){
+	def getSQLString(def text){
 		def lexer = null
 		def parser = null
+		def sqlString = null
 		try{
 			def query = new Query()
 			
 			lexer = new Lexer(new StringReader(text))
 		    parser = new parser(lexer)
 		    parser.setQuery(query)
-		    parser.parse()
+		    parser.parse()		    
+		    sqlString =  parser.getQuery().getFinalQuery() ?: ""
+
 		}
 		catch(Exception ex){
 			println ex.toString()
 		}
+		finally{
+			return sqlString
+		}
 	}
+
+	def executeSQLQuery(String sqlQuery){
+		parserRelacionalService.getDataFromDataBase(sqlQuery)
+	}
+
 }

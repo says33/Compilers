@@ -31,7 +31,7 @@ public class AnalizadorLexicoController {
 
     public void readTable(ScannerLexico scanner){
         try{
-            File afnTableFile = new File("//home//gamaliel//Escritorio//AFNTabla.bin");
+            File afnTableFile = new File("//users//gamaliel//Desktop//AFNTabla.bin");
             FileInputStream fis = new FileInputStream(afnTableFile);
             ObjectInputStream input = new ObjectInputStream(fis);
 

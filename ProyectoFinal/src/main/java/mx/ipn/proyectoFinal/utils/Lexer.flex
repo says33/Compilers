@@ -7,13 +7,15 @@ import java_cup.runtime.Symbol;
 %cup
 L = [A-Z]
 l = [a-z]
+LC = [a-zA-Z]
 D = [0-9]
 %%
 {L}({l}+) {return new Symbol(sym.TABLE,yytext()); }
-{l}+ {return new Symbol(sym.CAMPO,yytext()); }
+{l}({LC}+) {return new Symbol(sym.CAMPO,yytext()); }
 "\u03C0" {return new Symbol(sym.PROYECCION); }
 "\u03C3" {return new Symbol(sym.SELECCION); }
-'⋈' {return new Symbol(sym.JOIN); }
+"\u22C8" {return new Symbol(sym.JOIN); }
+"\u0425" {return new Symbol(sym.CARTESIANO);}
 "." {return new Symbol(sym.PUNTO); }
 "(" {return new Symbol(sym.PAR_I); }
 ")" {return new Symbol(sym.PAR_D); }

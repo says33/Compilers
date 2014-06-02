@@ -15,13 +15,14 @@ parser code
 	}
 :}
 
-terminal  	TABLE;
+terminal  	String TABLE;
 terminal	PROYECCION,SELECCION,JOIN;
 terminal	COMA,PUNTO,PAR_I,PAR_D;
 terminal 	CAMPO;
 terminal	String NUMBER;
 terminal 	GT,GE,LT,LE,EQ,LIKE,NE;
 terminal  	OR,AND,NOT;
+terminal    CARTESIANO;
 
 non terminal Rp;
 non terminal String R;
@@ -34,23 +35,58 @@ precedence left GT,GE,LT,LE,EQ,LIKE,NE;
 precedence left OR;
 precedence left AND;
 precedence left NOT;
+precedence left CARTESIANO;
 
 start with Rp;
 
-Rp ::= R;
+Rp ::= R{:	       
+	        String query = "SELECT ";
+	        int i;
+	        if(parser.getQuery().getListaCampos().size() > 0){
+	            query += parser.getQuery().getListaCampos().get(0);
+	            for(i=1;i<parser.getQuery().getListaCampos().size();i++)
+	        		query += "," + parser.getQuery().getListaCampos().get(i);
+	        }
+	        else
+	        	query += " * ";
 
-R ::= TABLE
+	        query += " FROM ";
+	     
+			query += parser.getQuery().getListaTablas().get(0);	            
+	        for(i=1;i<parser.getQuery().getListaTablas().size();i++)
+				query += "," + parser.getQuery().getListaTablas().get(i);	               
+
+	        if(parser.getQuery().getListaCondiciones().size() > 0){
+	            query += " WHERE ";
+	            query += parser.getQuery().getListaCondiciones().get(0);
+	            for(i=1;i<parser.getQuery().getListaCondiciones().size();i++)
+	        		query += " AND " + parser.getQuery().getListaCondiciones().get(i);	        	
+	        }
+
+	        parser.getQuery().setFinalQuery(query);
+	        
+	   :};
+
+R ::= TABLE:t
+	  {:
+	      if(!parser.getQuery().getListaTablas().contains(t))
+	          parser.getQuery().getListaTablas().add(t);
+	  :}
 	  | SELECCION PAR_I R COMA condicion PAR_D
 	  | PROYECCION PAR_I R COMA listaCampos PAR_D
-	  	{:
-	  		System.out.println("Se ejecuta este caso");
-	  	:};
+	  | JOIN PAR_I R COMA R COMA condicion PAR_D
+	  | R CARTESIANO R;
 
-listaCampos ::= campo
-			    | listaCampos COMA campo
-			      {:
-
-			      :};
+listaCampos ::= campo:c
+					{: 
+						if(!parser.getQuery().getListaCampos().contains(c))
+							parser.getQuery().getListaCampos().add(c);	
+					:}
+			    | listaCampos COMA campo:c
+			      	{:  	
+			          if(!parser.getQuery().getListaCampos().contains(c))
+			              parser.getQuery().getListaCampos().add(c);
+			      	:};
 
 condicion ::= expr:e
 			   {:
@@ -87,16 +123,19 @@ expr ::= expr:e1 GT expr:e2
 		 | expr:e1 LE expr:e2
 		 	{: RESULT = e1 + " <= " + e2; :}
 		 | expr:e1 EQ expr:e2
-		 	{: RESULT = e1 + " = " + e2; :}
+		 	{: RESULT = (String)e1 + " = " + (String)e2; :}
 		 | expr:e1 LIKE expr:e2
 		 	{: RESULT = e1 + " LIKE " + e2; :}
 		 | expr:e1 NE expr:e2
 		 	{: RESULT = e1 + " <> " + e2; :}
 		 | PAR_I expr:e PAR_D
 		 	{: RESULT = (String)e; :}
-		 | NUMBER
-		 | campo;
+		 | NUMBER:n
+		 	{: RESULT = (String)n; :}
+		 | campo:c
+		 	{: RESULT = (String)c; :};
 
-campo ::= CAMPO
+campo ::= CAMPO:c
+		    {:RESULT = (String)c; :}
 		  | TABLE:table PUNTO CAMPO:campo
 		  	{: RESULT = (String)table+"."+(String)campo; :};

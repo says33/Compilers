@@ -3,6 +3,7 @@ import groovy.swing.SwingBuilder
 import static javax.swing.JFrame.EXIT_ON_CLOSE
 import static java.awt.GridBagConstraints.*
 import javax.swing.*
+import javax.swing.table.DefaultTableModel
 import java.awt.*
 import groovy.beans.Bindable 
 import java.beans.PropertyChangeListener
@@ -103,8 +104,8 @@ class GUI{
 	    						tr{
 	    							td{button text:'π',actionPerformed:{ query.append("\u03C0") }}
 	    							td{button text:'σ',actionPerformed:{ query.append("\u03C3") }}
-	    							td{button text:'⋈',actionPerformed:{ query.append("\u03C0") }}
-	    							td{button text:'∪',actionPerformed:{ query.append("\u03C0") }}
+	    							td{button text:'⋈',actionPerformed:{ query.append("\u22C8") }}
+	    							td{button text:'Х',actionPerformed:{ query.append("\u0425") }}
 	    						}
 	    						tr{
 	    							td(colspan:8){
@@ -119,7 +120,37 @@ class GUI{
 	    							}
 	    							td{
 	    								button text:'Ejecutar consulta',actionPerformed:{
-	    									parserRelacionalController.parseString(query.text)		
+	    									def queryString
+	    									if((queryString = parserRelacionalController.getSQLString(query.text))){
+	    										sqlQuery.text = queryString
+	    										def datos = parserRelacionalController.executeSQLQuery(queryString)
+	    										
+	    										String[] columnNames = datos.columns.toArray()   									        										
+	    										
+        										
+        										
+
+	    										def model = new DefaultTableModel(datos.data as Object[][],columnNames)
+	    										dataTable.setModel(model)
+
+	    									}
+	    								}
+	    							}
+	    						}
+	    						tr{
+	    							td(colspan:8){
+	    								scrollPane(constraints:CENTER, border:BorderFactory.createRaisedBevelBorder()) {
+                        					textArea(id:'sqlQuery',columns:50,rows:5,lineWrap:true,wrapStyleWord:true)
+                    					}
+	    							}	
+	    						}
+	    						tr{
+	    							td{}
+	    							td(colspan:8){
+	    								scrollPane(preferredSize:[600,300]) {
+	    									table(id:'dataTable'){
+												    									                        					
+	    									}
 	    								}
 	    							}
 	    						}
