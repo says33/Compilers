@@ -4,6 +4,7 @@ import java.util.Properties
 import mx.ipn.proyectoFinal.services.ParserRelacionalService
 import mx.ipn.proyectoFinal.utils.Lexer
 import mx.ipn.proyectoFinal.utils.parser
+import mx.ipn.proyectoFinal.domain.Query
 
 class ParserRelacionalController{
 
@@ -29,8 +30,11 @@ class ParserRelacionalController{
 		def lexer = null
 		def parser = null
 		try{
+			def query = new Query()
+			
 			lexer = new Lexer(new StringReader(text))
 		    parser = new parser(lexer)
+		    parser.setQuery(query)
 		    parser.parse()
 		}
 		catch(Exception ex){

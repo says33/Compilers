@@ -75,7 +75,7 @@ class GUI{
 	    			}
 	    			panel(name:'Parser'){	    							
 	    				vbox(){	    					
-	    					tableLayout(maximumSize:[650,100]){
+	    					tableLayout(){
 	    						tr{									
 									td{label text:'Tablas'}
 									td{
@@ -101,10 +101,10 @@ class GUI{
 
 	    					tableLayout(){
 	    						tr{
-	    							td{button text:'π',actionPerformed:{ query.append('π') }}
-	    							td{button text:'σ',actionPerformed:{ query.append('σ') }}
-	    							td{button text:'⋈',actionPerformed:{ query.append('⋈') }}
-	    							td{button text:'∪',actionPerformed:{ query.append('∪') }}
+	    							td{button text:'π',actionPerformed:{ query.append("\u03C0") }}
+	    							td{button text:'σ',actionPerformed:{ query.append("\u03C3") }}
+	    							td{button text:'⋈',actionPerformed:{ query.append("\u03C0") }}
+	    							td{button text:'∪',actionPerformed:{ query.append("\u03C0") }}
 	    						}
 	    						tr{
 	    							td(colspan:8){

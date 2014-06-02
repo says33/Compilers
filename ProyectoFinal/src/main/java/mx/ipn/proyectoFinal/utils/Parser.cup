@@ -1,19 +1,102 @@
 package mx.ipn.proyectoFinal.utils;
 import java_cup.runtime.*;
+import mx.ipn.proyectoFinal.domain.Query;
 
 parser code
 {: 
+	private Query query;
+
+	public void setQuery(Query query){
+		this.query = query;
+	}
+
+	public Query getQuery(){
+		return this.query;
+	}
 :}
 
-terminal  TABLE;
+terminal  	TABLE;
+terminal	PROYECCION,SELECCION,JOIN;
+terminal	COMA,PUNTO,PAR_I,PAR_D;
+terminal 	CAMPO;
+terminal	String NUMBER;
+terminal 	GT,GE,LT,LE,EQ,LIKE,NE;
+terminal  	OR,AND,NOT;
 
 non terminal Rp;
 non terminal String R;
+non terminal condicion;
+non terminal String expr;
+non terminal listaCampos;
+non terminal String campo;
+
+precedence left GT,GE,LT,LE,EQ,LIKE,NE;
+precedence left OR;
+precedence left AND;
+precedence left NOT;
 
 start with Rp;
 
-Rp ::= R:r {:    
-    System.out.println(r);
-:};
+Rp ::= R;
 
-R ::= TABLE:t {: RESULT = (String)t; :};
+R ::= TABLE
+	  | SELECCION PAR_I R COMA condicion PAR_D
+	  | PROYECCION PAR_I R COMA listaCampos PAR_D
+	  	{:
+	  		System.out.println("Se ejecuta este caso");
+	  	:};
+
+listaCampos ::= campo
+			    | listaCampos COMA campo
+			      {:
+
+			      :};
+
+condicion ::= expr:e
+			   {:
+			       if(!parser.getQuery().getListaCondiciones().contains(e))
+				       parser.getQuery().getListaCondiciones().add(e);
+			   :}
+			 | expr:e1 OR expr:e2
+			   {:
+			       String aux = (String)e1 + " OR " + (String)e2;
+			       if(!parser.getQuery().getListaCondiciones().contains(aux))
+			           parser.getQuery().getListaCondiciones().add(aux);
+			   :}
+			 | expr:e1 AND expr:e2			   
+			   {: 
+			       String aux = (String)e1 + " AND " + (String)e2;
+
+			       if(!parser.getQuery().getListaCondiciones().contains(aux))
+			           parser.getQuery().getListaCondiciones().add(aux);
+
+			   :}
+			 | NOT expr:e
+			   {:
+			       String aux = " NOT " + (String)e;
+			       if(!parser.getQuery().getListaCondiciones().contains(aux))
+			           parser.getQuery().getListaCondiciones().add(aux);
+			   :};
+
+expr ::= expr:e1 GT expr:e2
+			{: RESULT = e1 + " > " + e2; :}
+		 | expr:e1 GE expr:e2
+		 	{: RESULT = e1 + " >= " + e2; :}
+		 | expr:e1 LT expr:e2
+		 	{: RESULT = e1 + " < " + e2; :}
+		 | expr:e1 LE expr:e2
+		 	{: RESULT = e1 + " <= " + e2; :}
+		 | expr:e1 EQ expr:e2
+		 	{: RESULT = e1 + " = " + e2; :}
+		 | expr:e1 LIKE expr:e2
+		 	{: RESULT = e1 + " LIKE " + e2; :}
+		 | expr:e1 NE expr:e2
+		 	{: RESULT = e1 + " <> " + e2; :}
+		 | PAR_I expr:e PAR_D
+		 	{: RESULT = (String)e; :}
+		 | NUMBER
+		 | campo;
+
+campo ::= CAMPO
+		  | TABLE:table PUNTO CAMPO:campo
+		  	{: RESULT = (String)table+"."+(String)campo; :};
